@@ -36,6 +36,12 @@ functions:
   parse-auth:
     handler: src/parse-auth/index.handler
     role: LambdaEdgeExecutionRole
+  refresh-auth:
+    handler: src/refresh-auth/index.handler
+    role: LambdaEdgeExecutionRole
+  sign-out:
+    handler: src/sign-out/index.handler
+    role: LambdaEdgeExecutionRole
 
 resources:
   Resources:
