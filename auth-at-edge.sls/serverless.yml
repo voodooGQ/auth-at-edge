@@ -27,13 +27,21 @@ custom:
     #     - aws-sdk
 
 functions:
-  checkAuth:
+  check-auth:
     handler: src/check-auth/index.handler
     role: LambdaEdgeExecutionRole
     events:
       - http:
           path: check-auth
           method: post
+          cors: true
+  http-headers:
+    handler: src/http-headers/index.handler
+    role: LambdaEdgeExecutionRole
+    events:
+      - http:
+          path: http-headers
+          method: get
           cors: true
 
 resources:
