@@ -44,6 +44,58 @@ functions:
     role: LambdaEdgeExecutionRole
 
 resources:
+  Parameters:
+    RedirectPathSignIn:
+      Type: String
+      Description: The URL path that should handle the redirect from Cognito after sign-in
+      Default: /parseauth
+    RedirectPathSignOut:
+      Type: String
+      Description: The URL path that should handle the redirect from Cognito after sign-out
+      Default: /
+    RedirectPathAuthRefresh:
+      Type: String
+      Description: The URL path that should handle the JWT refresh request
+      Default: /refreshauth
+    SignOutUrl:
+      Type: String
+      Description: The URL path that you can visit to sign-out
+      Default: /signout
+    CookieSettings:
+      Type: String
+      Description: The settings for the cookies holding the JWT's. To be provided as a JSON object
+      Default: >-
+        {
+          "idToken": "Path=/; Secure; SameSite=Lax",
+          "accessToken": "Path=/; Secure; SameSite=Lax",
+          "refreshToken": "Path=/; Secure; SameSite=Lax",
+          "nonce": "Path=/; Secure; HttpOnly; Max-Age=1800; SameSite=Lax"
+        }
+    OAuthScopes:
+      Type: String
+      Description: The OAuth scopes to request the User Pool to add to the access token JWT. To be provided as a JSON array
+      Default: >-
+        ["phone", "email", "profile", "openid", "aws.cognito.signin.user.admin"]
+    HttpHeaders:
+      Type: String
+      Description: The HTTP headers to set on all responses from CloudFront. To be provided as a JSON object
+      Default: >-
+        {
+          "Content-Security-Policy": "default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; connect-src 'self' https://*.amazonaws.com https://*.amazoncognito.com",
+          "Strict-Transport-Security": "max-age=31536000; includeSubdomains; preload",
+          "Referrer-Policy": "same-origin",
+          "X-XSS-Protection": "1; mode=block",
+          "X-Frame-Options": "DENY",
+          "X-Content-Type-Options": "nosniff"
+        }
+    CreateCloudFrontDistribution:
+      Type: String
+      Description: Set to 'false' to skip the creation of a CloudFront distribution and associated resources, such as the private S3 bucket and the sample React app. This may be of use to you, if you just want to create the Lambda@Edge functions to use with your own CloudFront distribution.
+      Default: "true"
+    Version:
+      Type: String
+      Description: "Use for development: putting in a new version forces redeployment of Lambda@Edge functions"
+      Default: ""
   Resources:
     S3Bucket: ${file(./src/resources/s3.bucket.yml)}
     LambdaEdgeExecutionRole: ${file(./src/resources/lambda_edge_execution.role.yml)}
