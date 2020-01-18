@@ -29,6 +29,7 @@ custom:
 functions:
   checkAuth:
     handler: src/check-auth/index.handler
+    role: LambdaEdgeExecutionRole
     events:
       - http:
           path: check-auth
@@ -38,3 +39,4 @@ functions:
 resources:
   Resources:
     S3Bucket: ${file(./src/resources/s3.bucket.yml)}
+    LambdaEdgeExecutionRole: ${file(./src/resources/lambda_edge_execution.role.yml)}
