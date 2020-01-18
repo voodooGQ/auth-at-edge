@@ -1,0 +1,13 @@
+---
+Type: AWS::S3::BucketPolicy
+Properties:
+  Bucket: !Ref S3Bucket
+  PolicyDocument:
+    Version: "2012-10-17"
+    Statement:
+      - Action:
+        - "s3:GetObject"
+        Effect: "Allow"
+        Resource: !Join ["/", [!GetAtt S3Bucket.Arn, "*"]]
+        Principal:
+          CanonicalUser: !GetAtt CloudFrontOriginAccessIdentity.S3CanonicalUserId

@@ -30,21 +30,16 @@ functions:
   check-auth:
     handler: src/check-auth/index.handler
     role: LambdaEdgeExecutionRole
-    events:
-      - http:
-          path: check-auth
-          method: post
-          cors: true
   http-headers:
     handler: src/http-headers/index.handler
     role: LambdaEdgeExecutionRole
-    events:
-      - http:
-          path: http-headers
-          method: get
-          cors: true
+  parse-auth:
+    handler: src/parse-auth/index.handler
+    role: LambdaEdgeExecutionRole
 
 resources:
   Resources:
     S3Bucket: ${file(./src/resources/s3.bucket.yml)}
     LambdaEdgeExecutionRole: ${file(./src/resources/lambda_edge_execution.role.yml)}
+    CloudFrontOriginAccessIdentity: ${file(./src/resources/cloudfront.oai.yml)}
+    CloudFrontBucketPolicy: ${file(./src/resources/cloudfront.bucket_policy.yml)}
