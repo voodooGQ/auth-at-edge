@@ -1,0 +1,5 @@
+---
+Type: Custom::UserPoolDomain
+Properties:
+  ServiceToken: !GetAtt UserPoolDomainHandlerLambdaFunction.Arn
+  UserPoolId: !Ref UserPool

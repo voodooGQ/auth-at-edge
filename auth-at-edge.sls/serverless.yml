@@ -114,3 +114,4 @@ resources:
     User: ${file(./src/resources/default.userpooluser.yml)}
     UserPoolClient: ${file(./src/resources/default.userpoolclient.yml)}
     UserPoolDomainHandlerRole: ${file(./src/resources/user_pool_domain_handler.role.yml)}
+    UserPoolDomain: ${file(./src/resources/default.userpooldomain.yml)}
