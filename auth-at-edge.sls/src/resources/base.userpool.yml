@@ -1,0 +1,8 @@
+---
+Type: AWS::Cognito::UserPool
+Properties:
+  AdminCreateUserConfig:
+    AllowAdminCreateUserOnly: true
+  UserPoolName: !Sub "#{AWS::Region}-#{AWS::StackName}-#{AWS::AccountId}"
+  UsernameAttributes:
+    - email

@@ -2,10 +2,12 @@ service: private-spa
 
 plugins:
 - serverless-webpack
+- serverless-pseudo-parameters
 
 provider:
   name: aws
   runtime: nodejs10.x
+  region: us-east-1
 
 # After adding a few functions and associated dependencies, individual function
 # packages can be created to avoid a single massive zip file.
@@ -101,3 +103,4 @@ resources:
     LambdaEdgeExecutionRole: ${file(./src/resources/lambda_edge_execution.role.yml)}
     CloudFrontOriginAccessIdentity: ${file(./src/resources/cloudfront.oai.yml)}
     CloudFrontBucketPolicy: ${file(./src/resources/cloudfront.bucket_policy.yml)}
+    UserPool: ${file(./src/resources/base.userpool.yml)}
