@@ -1,0 +1,5 @@
+---
+Type: AWS::Cognito::UserPoolUser
+Properties:
+  Username: !Ref EmailAddress
+  UserPoolId: !Ref UserPool

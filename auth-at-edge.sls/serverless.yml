@@ -47,6 +47,10 @@ functions:
 
 resources:
   Parameters:
+    EmailAddress:
+      Type: String
+      Description: Default Email to create a user
+      Default: voodoogq@gmail.com
     RedirectPathSignIn:
       Type: String
       Description: The URL path that should handle the redirect from Cognito after sign-in
@@ -104,3 +108,4 @@ resources:
     CloudFrontOriginAccessIdentity: ${file(./src/resources/cloudfront.oai.yml)}
     CloudFrontBucketPolicy: ${file(./src/resources/cloudfront.bucket_policy.yml)}
     UserPool: ${file(./src/resources/base.userpool.yml)}
+    User: ${file(./src/resources/default.userpooluser.yml)}
