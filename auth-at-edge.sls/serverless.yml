@@ -27,19 +27,19 @@ custom:
     #     - aws-sdk
 
 functions:
-  check-auth:
+  checkAuth:
     handler: src/check-auth/index.handler
     role: LambdaEdgeExecutionRole
-  http-headers:
+  httpHeaders:
     handler: src/http-headers/index.handler
     role: LambdaEdgeExecutionRole
-  parse-auth:
+  parseAuth:
     handler: src/parse-auth/index.handler
     role: LambdaEdgeExecutionRole
-  refresh-auth:
+  refreshAuth:
     handler: src/refresh-auth/index.handler
     role: LambdaEdgeExecutionRole
-  sign-out:
+  signOut:
     handler: src/sign-out/index.handler
     role: LambdaEdgeExecutionRole
 
