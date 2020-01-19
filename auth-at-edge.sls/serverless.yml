@@ -50,7 +50,7 @@ resources:
     EmailAddress:
       Type: String
       Description: Default Email to create a user
-      Default: voodoogq@gmail.com
+      Default: ssmith@onica.com
     RedirectPathSignIn:
       Type: String
       Description: The URL path that should handle the redirect from Cognito after sign-in
