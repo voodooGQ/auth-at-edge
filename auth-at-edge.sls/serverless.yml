@@ -30,19 +30,19 @@ custom:
 
 functions:
   checkAuth:
-    handler: src/check-auth/index.handler
+    handler: src/lambda-edge/check-auth/index.handler
     role: LambdaEdgeExecutionRole
   httpHeaders:
-    handler: src/http-headers/index.handler
+    handler: src/lambda-edge/http-headers/index.handler
     role: LambdaEdgeExecutionRole
   parseAuth:
-    handler: src/parse-auth/index.handler
+    handler: src/lambda-edge/parse-auth/index.handler
     role: LambdaEdgeExecutionRole
   refreshAuth:
-    handler: src/refresh-auth/index.handler
+    handler: src/lambda-edge/refresh-auth/index.handler
     role: LambdaEdgeExecutionRole
   signOut:
-    handler: src/sign-out/index.handler
+    handler: src/lambda-edge/sign-out/index.handler
     role: LambdaEdgeExecutionRole
 
 resources:
@@ -107,5 +107,6 @@ resources:
     LambdaEdgeExecutionRole: ${file(./src/resources/lambda_edge_execution.role.yml)}
     CloudFrontOriginAccessIdentity: ${file(./src/resources/cloudfront.oai.yml)}
     CloudFrontBucketPolicy: ${file(./src/resources/cloudfront.bucket_policy.yml)}
-    UserPool: ${file(./src/resources/base.userpool.yml)}
+    UserPool: ${file(./src/resources/default.userpool.yml)}
     User: ${file(./src/resources/default.userpooluser.yml)}
+    UserPoolClient: ${file(./src/resources/default.userpoolclient.yml)}
