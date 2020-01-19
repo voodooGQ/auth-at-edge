@@ -47,6 +47,9 @@ functions:
   userPoolDomainHandler:
     handler: src/cfn-custom-resources/user-pool-domain/index.handler
     role: UserPoolDomainHandlerRole
+  lambdaCodeUpdateHandler:
+    handler: src/cfn-custom-resources/lambda-code-update/index.handler
+    role: LambdaCodeUpdateHandlerRole
 
 resources:
   Parameters:
@@ -115,3 +118,5 @@ resources:
     UserPoolClient: ${file(./src/resources/default.userpoolclient.yml)}
     UserPoolDomainHandlerRole: ${file(./src/resources/user_pool_domain_handler.role.yml)}
     UserPoolDomain: ${file(./src/resources/default.userpooldomain.yml)}
+    LambdaCodeUpdateHandlerRole: ${file(./src/resources/lambda_code_update_handler.role.yml)}
+    ParseAuthHandlerCodeUpdate: ${file(./src/resources/parse_auth_handler.code_update.yml)}

@@ -1,0 +1,12 @@
+---
+Type: Custom::LambdaCodeUpdate
+Properties:
+  ServiceToken: !GetAtt LambdaCodeUpdateHandlerLambdaFunction.Arn
+  LambdaFunction: !GetAtt ParseAuthLambdaFunction.Arn
+  Version: !Ref Version
+  Configuration: >
+    {
+      "userPoolId": Fn::GetAtt:
+        - CognitoUserPool
+        - UserPoolId
+    }
