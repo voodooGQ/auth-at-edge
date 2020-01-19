@@ -44,6 +44,9 @@ functions:
   signOut:
     handler: src/lambda-edge/sign-out/index.handler
     role: LambdaEdgeExecutionRole
+  userPoolDomainHandler:
+    handler: src/cfn-custom-resources/user-pool-domain/index.handler
+    role: UserPoolDomainHandlerRole
 
 resources:
   Parameters:
@@ -110,3 +113,4 @@ resources:
     UserPool: ${file(./src/resources/default.userpool.yml)}
     User: ${file(./src/resources/default.userpooluser.yml)}
     UserPoolClient: ${file(./src/resources/default.userpoolclient.yml)}
+    UserPoolDomainHandlerRole: ${file(./src/resources/user_pool_domain_handler.role.yml)}
