@@ -1,5 +1,7 @@
 const path = require('path');
 const slsw = require('serverless-webpack');
+const TerserPlugin = require('terser-webpack-plugin');
+const nodeExternals = require('webpack-node-externals');
 
 // If dependencies can't be properly included in-line, then switch to
 // excluding them via webpack-node-externals
@@ -22,6 +24,9 @@ module.exports = {
             {
                 test: /^(?!.*\.test\.ts$).*\.ts$/,
                 loader: 'ts-loader',
+                options: {
+                    transpileOnly: true,
+                },
                 exclude: /node_modules/
             }
         ],
@@ -30,6 +35,22 @@ module.exports = {
         libraryTarget: 'commonjs',
         path: path.join(__dirname, '.webpack'),
         filename: '[name].js',
+    },
+    externals: [
+        /^aws-sdk/
+    ],
+    performance: {
+        hints: 'error',
+        maxAssetSize: 1048576, // Max size of deployment bundle in Lambda@Edge Viewer Request
+        maxEntrypointSize: 1048576, // Max size of deployment bundle in Lambda@Edge Viewer Request
+    },
+    optimization: {
+        minimize: true,
+        minimizer: [new TerserPlugin({
+            cache: true,
+            parallel: true,
+            extractComments: true,
+        })],
     },
     // Can externalize dependencies if needed (see comment on webpack-node-externals above):
     // externals: [nodeExternals()],
