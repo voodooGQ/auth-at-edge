@@ -37,6 +37,7 @@ module.exports = {
         filename: '[name].js',
     },
     externals: [
+        nodeExternals(),
         /^aws-sdk/
     ],
     performance: {

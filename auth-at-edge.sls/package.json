@@ -16,6 +16,7 @@
     "adm-zip": "^0.4.13",
     "aws-sdk": "^2.556.0",
     "axios": "^0.19.1",
+    "cookie": "^0.4.0",
     "jsonwebtoken": "^8.5.1",
     "jwks-rsa": "^1.6.1",
     "serverless-pseudo-parameters": "^2.5.0",
@@ -25,6 +26,7 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.20",
+    "@types/cookie": "^0.3.3",
     "@types/jest": "^24.0.20",
     "@types/node": "^11.10.4",
     "jest": "^24.9.0",

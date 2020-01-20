@@ -34,8 +34,8 @@ Properties:
       ForwardedValues:
         QueryString: true
       LambdaFunctionAssociations:
-        - EventType: viewer-request
-          LambdaFunctionARN: !GetAtt CheckAuthCodeUpdate.FunctionArn
+        # - EventType: viewer-request
+        #   LambdaFunctionARN: !GetAtt CheckAuthCodeUpdate.FunctionArn
         - EventType: origin-response
           LambdaFunctionARN: !GetAtt HttpHeadersCodeUpdate.FunctionArn
       TargetOriginId: protected-bucket

@@ -124,4 +124,4 @@ resources:
     HttpHeadersCodeUpdate: ${file(./src/lambda-edge/http-headers/code_update.yml)}
     RefreshAuthCodeUpdate: ${file(./src/lambda-edge/refresh-auth/code_update.yml)}
     SignOutCodeUpdate: ${file(./src/lambda-edge/sign-out/code_update.yml)}
-    CloudFrontDistribution: ${file(./src/resources/cloudfront.distribution.yml)}
+    # CloudFrontDistribution: ${file(./src/resources/cloudfront.distribution.yml)}
