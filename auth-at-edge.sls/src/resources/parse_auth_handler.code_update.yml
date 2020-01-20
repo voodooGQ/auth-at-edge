@@ -4,9 +4,15 @@ Properties:
   ServiceToken: !GetAtt LambdaCodeUpdateHandlerLambdaFunction.Arn
   LambdaFunction: !GetAtt ParseAuthLambdaFunction.Arn
   Version: !Ref Version
-  Configuration: >
+  Configuration: !Sub >
     {
-      "userPoolId": Fn::GetAtt:
-        - CognitoUserPool
-        - UserPoolId
+      "userPoolId": "#{UserPool}",
+      "clientId": "#{UserPoolClient}",
+      "oauthScopes": "#{OAuthScopes}"
+      "cognitoAuthDomain": "#{UserPoolDomain.DomainName}",
+      "redirectPathSignIn": "#{RedirectPathSignIn}",
+      "redirectPathSignOut": "#{RedirectPathSignOut}",
+      "redirectPathAuthRefresh": "#{RedirectPathAuthRefresh}",
+      "cookieSettings": #{CookieSettings},
+      "httpHeaders": #{HttpHeaders}
     }

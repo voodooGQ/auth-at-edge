@@ -107,7 +107,7 @@ resources:
     Version:
       Type: String
       Description: "Use for development: putting in a new version forces redeployment of Lambda@Edge functions"
-      Default: ""
+      Default: "1.0.0"
   Resources:
     S3Bucket: ${file(./src/resources/s3.bucket.yml)}
     LambdaEdgeExecutionRole: ${file(./src/resources/lambda_edge_execution.role.yml)}
