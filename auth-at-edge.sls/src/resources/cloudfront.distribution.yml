@@ -9,7 +9,7 @@ Type: AWS::CloudFront::Distribution
             QueryString: true
           LambdaFunctionAssociations:
             - EventType: viewer-request
-              LambdaFunctionARN: !GetAtt ParseAuthHandlerCodeUpdate.FunctionArn
+              LambdaFunctionARN: !GetAtt ParseAuthCodeUpdate.FunctionArn
           TargetOriginId: dummy-origin
           ViewerProtocolPolicy: redirect-to-https
         - PathPattern: !Ref RedirectPathAuthRefresh
@@ -18,7 +18,7 @@ Type: AWS::CloudFront::Distribution
             QueryString: true
           LambdaFunctionAssociations:
             - EventType: viewer-request
-              LambdaFunctionARN: !GetAtt RefreshAuthHandlerCodeUpdate.FunctionArn
+              LambdaFunctionARN: !GetAtt RefreshAuthCodeUpdate.FunctionArn
           TargetOriginId: dummy-origin
           ViewerProtocolPolicy: redirect-to-https
         - PathPattern: !Ref SignOutUrl
@@ -27,7 +27,7 @@ Type: AWS::CloudFront::Distribution
             QueryString: true
           LambdaFunctionAssociations:
             - EventType: viewer-request
-              LambdaFunctionARN: !GetAtt SignOutHandlerCodeUpdate.FunctionArn
+              LambdaFunctionARN: !GetAtt SignOutCodeUpdate.FunctionArn
           TargetOriginId: dummy-origin
           ViewerProtocolPolicy: redirect-to-https
       DefaultCacheBehavior:
@@ -36,14 +36,17 @@ Type: AWS::CloudFront::Distribution
           QueryString: true
         LambdaFunctionAssociations:
           - EventType: viewer-request
-            LambdaFunctionARN: !GetAtt CheckAuthHandlerCodeUpdate.FunctionArn
+            LambdaFunctionARN: !GetAtt CheckAuthCodeUpdate.FunctionArn
           - EventType: origin-response
-            LambdaFunctionARN: !GetAtt HttpHeadersHandlerCodeUpdate.FunctionArn
+            LambdaFunctionARN: !GetAtt HttpHeadersCodeUpdate.FunctionArn
         TargetOriginId: protected-bucket
         ViewerProtocolPolicy: redirect-to-https
       Enabled: true
       Origins:
-        - DomainName: !Sub "${S3Bucket}.s3.amazonaws.com"
+        - DomainName: !Join
+          - '.'
+          - - !Ref S3Bucket
+            - 's3.amazonaws.com'
           Id: protected-bucket
           S3OriginConfig:
             OriginAccessIdentity:

@@ -1,0 +1,18 @@
+---
+Type: Custom::LambdaCodeUpdate
+Properties:
+  ServiceToken: !GetAtt LambdaCodeUpdateHandlerLambdaFunction.Arn
+  LambdaFunction: !GetAtt RefreshAuthLambdaFunction.Arn
+  Version: !Ref Version
+  Configuration: !Sub >
+    {
+      "userPoolId": "#{UserPool}",
+      "clientId": "#{UserPoolClient}",
+      "oauthScopes": "#{OAuthScopes}"
+      "cognitoAuthDomain": "#{UserPoolDomain.DomainName}",
+      "redirectPathSignIn": "#{RedirectPathSignIn}",
+      "redirectPathSignOut": "#{RedirectPathSignOut}",
+      "redirectPathAuthRefresh": "#{RedirectPathAuthRefresh}",
+      "cookieSettings": #{CookieSettings},
+      "httpHeaders": #{HttpHeaders}
+    }
