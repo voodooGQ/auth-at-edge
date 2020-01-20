@@ -1,5 +1,5 @@
 {
-  "name": "replaceme-myslsservice",
+  "name": "auth-at-edge",
   "version": "1.0.0",
   "description": "Replace Me - My Serverless Service",
   "main": "index.js",
@@ -13,7 +13,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "adm-zip": "^0.4.13",
     "aws-sdk": "^2.556.0",
+    "axios": "^0.19.1",
+    "jsonwebtoken": "^8.5.1",
+    "jwks-rsa": "^1.6.1",
     "serverless-pseudo-parameters": "^2.5.0",
     "source-map-support": "^0.5.10"
   },
