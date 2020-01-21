@@ -8,6 +8,8 @@ provider:
   name: aws
   runtime: nodejs10.x
   region: us-east-1
+  memorySize: 128
+  timeout: 5
 
 # After adding a few functions and associated dependencies, individual function
 # packages can be created to avoid a single massive zip file.
@@ -124,4 +126,4 @@ resources:
     HttpHeadersCodeUpdate: ${file(./src/lambda-edge/http-headers/code_update.yml)}
     RefreshAuthCodeUpdate: ${file(./src/lambda-edge/refresh-auth/code_update.yml)}
     SignOutCodeUpdate: ${file(./src/lambda-edge/sign-out/code_update.yml)}
-    # CloudFrontDistribution: ${file(./src/resources/cloudfront.distribution.yml)}
+    CloudFrontDistribution: ${file(./src/resources/cloudfront.distribution.yml)}

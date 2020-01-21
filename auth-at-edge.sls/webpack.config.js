@@ -1,7 +1,6 @@
 const path = require('path');
 const slsw = require('serverless-webpack');
 const TerserPlugin = require('terser-webpack-plugin');
-const nodeExternals = require('webpack-node-externals');
 
 // If dependencies can't be properly included in-line, then switch to
 // excluding them via webpack-node-externals
@@ -36,10 +35,6 @@ module.exports = {
         path: path.join(__dirname, '.webpack'),
         filename: '[name].js',
     },
-    externals: [
-        nodeExternals(),
-        /^aws-sdk/
-    ],
     performance: {
         hints: 'error',
         maxAssetSize: 1048576, // Max size of deployment bundle in Lambda@Edge Viewer Request
@@ -56,6 +51,6 @@ module.exports = {
     // Can externalize dependencies if needed (see comment on webpack-node-externals above):
     // externals: [nodeExternals()],
     // or alternatively the aws sdk can be ommitted from the package without webpack-node-externals:
-    // externals: ['aws-sdk'],
+    externals: ['aws-sdk'],
     devtool: 'source-map'
 };

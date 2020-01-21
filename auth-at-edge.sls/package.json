@@ -21,8 +21,7 @@
     "jwks-rsa": "^1.6.1",
     "serverless-pseudo-parameters": "^2.5.0",
     "source-map-support": "^0.5.10",
-    "terser-webpack-plugin": "^2.3.2",
-    "webpack-node-externals": "^1.7.2"
+    "terser-webpack-plugin": "^2.3.2"
   },
   "devDependencies": {
     "@types/aws-lambda": "^8.10.20",

@@ -37,6 +37,7 @@ export interface Config extends ConfigFromDisk {
 }
 
 export function getConfig(): Config {
+  console.log('IN GETCONFIG');
   const config = JSON.parse(
     readFileSync(`${__dirname}/configuration.json`).toString("utf8"),
   ) as ConfigFromDisk;

@@ -1,66 +1,26 @@
 Type: AWS::CloudFront::Distribution
 Properties:
   DistributionConfig:
-    CacheBehaviors:
-      - PathPattern: !Ref RedirectPathSignIn
-        Compress: true
-        ForwardedValues:
-          QueryString: true
-        LambdaFunctionAssociations:
-          - EventType: viewer-request
-            LambdaFunctionARN: !GetAtt ParseAuthCodeUpdate.FunctionArn
-        TargetOriginId: dummy-origin
-        ViewerProtocolPolicy: redirect-to-https
-      - PathPattern: !Ref RedirectPathAuthRefresh
-        Compress: true
-        ForwardedValues:
-          QueryString: true
-        LambdaFunctionAssociations:
-          - EventType: viewer-request
-            LambdaFunctionARN: !GetAtt RefreshAuthCodeUpdate.FunctionArn
-        TargetOriginId: dummy-origin
-        ViewerProtocolPolicy: redirect-to-https
-      - PathPattern: !Ref SignOutUrl
-        Compress: true
-        ForwardedValues:
-          QueryString: true
-        LambdaFunctionAssociations:
-          - EventType: viewer-request
-            LambdaFunctionARN: !GetAtt SignOutCodeUpdate.FunctionArn
-        TargetOriginId: dummy-origin
-        ViewerProtocolPolicy: redirect-to-https
+    Enabled: true
     DefaultCacheBehavior:
       Compress: true
       ForwardedValues:
         QueryString: true
-      LambdaFunctionAssociations:
-        # - EventType: viewer-request
-        #   LambdaFunctionARN: !GetAtt CheckAuthCodeUpdate.FunctionArn
-        - EventType: origin-response
-          LambdaFunctionARN: !GetAtt HttpHeadersCodeUpdate.FunctionArn
       TargetOriginId: protected-bucket
       ViewerProtocolPolicy: redirect-to-https
-    Enabled: true
     Origins:
-      - DomainName: !Join
-        - '.'
-        - - !Ref S3Bucket
-          - 's3.amazonaws.com'
-        Id: protected-bucket
-        S3OriginConfig:
-          OriginAccessIdentity: !Join
-            - '/'
-            - - 'origin-access-identity'
-              - 'cloudfront'
-              - !Ref CloudFrontOriginAccessIdentity
-      - DomainName: example.org
-        Id: dummy-origin
-        CustomOriginConfig:
-          OriginProtocolPolicy: match-viewer
-    CustomErrorResponses:
-      - ErrorCode: 403
-        ResponseCode: 200
-        ResponsePagePath: /index.html
-      - ErrorCode: 404
-        ResponseCode: 200
-        ResponsePagePath: /index.html
+    - DomainName: !Join
+      - '.'
+      - - !Ref S3Bucket
+        - 's3.amazonaws.com'
+      Id: protected-bucket
+      S3OriginConfig:
+        OriginAccessIdentity: !Join
+          - '/'
+          - - 'origin-access-identity'
+            - 'cloudfront'
+            - !Ref CloudFrontOriginAccessIdentity
+    - DomainName: example.org
+      Id: dummy-origin
+      CustomOriginConfig:
+        OriginProtocolPolicy: match-viewer
