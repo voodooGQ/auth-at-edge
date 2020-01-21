@@ -122,7 +122,7 @@ resources:
     UserPoolDomain: ${file(./src/resources/default.userpooldomain.yml)}
     LambdaCodeUpdateHandlerRole: ${file(./src/resources/lambda_code_update_handler.role.yml)}
     ParseAuthCodeUpdate: ${file(./src/lambda-edge/parse-auth/code_update.yml)}
-    CheckAuthCodeUpdate: ${file(./src/lambda-edge/check-auth/code_update.yml)}
+    # CheckAuthCodeUpdate: ${file(./src/lambda-edge/check-auth/code_update.yml)}
     HttpHeadersCodeUpdate: ${file(./src/lambda-edge/http-headers/code_update.yml)}
     RefreshAuthCodeUpdate: ${file(./src/lambda-edge/refresh-auth/code_update.yml)}
     SignOutCodeUpdate: ${file(./src/lambda-edge/sign-out/code_update.yml)}
