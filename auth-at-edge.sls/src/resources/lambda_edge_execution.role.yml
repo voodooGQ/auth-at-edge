@@ -11,5 +11,15 @@ Properties:
             - lambda.amazonaws.com
         Action:
           - sts:AssumeRole
+  Policies:
+    - PolicyName: CreateAndWriteToLogStream
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+            Resource: '*'
   ManagedPolicyArns:
     - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole

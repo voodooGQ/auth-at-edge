@@ -2,10 +2,43 @@ Type: AWS::CloudFront::Distribution
 Properties:
   DistributionConfig:
     Enabled: true
+    CacheBehaviors:
+      - PathPattern: !Ref RedirectPathSignIn
+        Compress: true
+        ForwardedValues:
+          QueryString: true
+        LambdaFunctionAssociations:
+          - EventType: viewer-request
+            LambdaFunctionARN: !GetAtt ParseAuthCodeUpdate.FunctionArn
+        TargetOriginId: dummy-origin
+        ViewerProtocolPolicy: redirect-to-https
+      - PathPattern: !Ref RedirectPathAuthRefresh
+        Compress: true
+        ForwardedValues:
+          QueryString: true
+        LambdaFunctionAssociations:
+          - EventType: viewer-request
+            LambdaFunctionARN: !GetAtt RefreshAuthCodeUpdate.FunctionArn
+        TargetOriginId: dummy-origin
+        ViewerProtocolPolicy: redirect-to-https
+      - PathPattern: !Ref SignOutUrl
+        Compress: true
+        ForwardedValues:
+          QueryString: true
+        LambdaFunctionAssociations:
+          - EventType: viewer-request
+            LambdaFunctionARN: !GetAtt SignOutCodeUpdate.FunctionArn
+        TargetOriginId: dummy-origin
+        ViewerProtocolPolicy: redirect-to-https
     DefaultCacheBehavior:
       Compress: true
       ForwardedValues:
         QueryString: true
+      LambdaFunctionAssociations:
+        # - EventType: viewer-request
+        #   LambdaFunctionARN: !GetAtt CheckAuthCodeUpdate.FunctionArn
+        - EventType: origin-response
+          LambdaFunctionARN: !GetAtt HttpHeadersCodeUpdate.FunctionArn
       TargetOriginId: protected-bucket
       ViewerProtocolPolicy: redirect-to-https
     Origins:
@@ -24,3 +57,10 @@ Properties:
       Id: dummy-origin
       CustomOriginConfig:
         OriginProtocolPolicy: match-viewer
+    CustomErrorResponses:
+      - ErrorCode: 403
+        ResponseCode: 200
+        ResponsePagePath: /index.html
+      - ErrorCode: 404
+        ResponseCode: 200
+        ResponsePagePath: /index.html
