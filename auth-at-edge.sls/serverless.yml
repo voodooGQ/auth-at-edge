@@ -1,4 +1,4 @@
-service: pspa-debug-4
+service: pspa-debug-5
 
 plugins:
 - serverless-webpack
@@ -33,7 +33,7 @@ functions:
     role: LambdaEdgeExecutionRole
     lambdaAtEdge:
       distribution: CloudFrontDistribution
-      eventType: 'viewer-request'
+      eventType: 'origin-request'
   httpHeaders:
     handler: src/lambda-edge/http-headers/index.handler
     role: LambdaEdgeExecutionRole
@@ -148,60 +148,6 @@ resources:
     CognitoAuthDomain:
       Description: The domain where the Cognito Hosted UI is served
       Value: !GetAtt UserPoolDomain.DomainName
-    # RedirectUrisSignIn:
-    #   Description: The URI(s) that will handle the redirect from Cognito after successful sign-in
-    #   Value: !GetAtt UserPoolClientUpdate.RedirectUrisSignIn
-    # RedirectUrisSignOut:
-    #   Description: The URI(s) that will handle the redirect from Cognito after successful sign-out
-    #   Value: !GetAtt UserPoolClientUpdate.RedirectUrisSignOut
-    ParseAuthHandler:
-      Description: The Lambda function ARN to use in Lambda@Edge for parsing the URL of the redirect from the Cognito hosted UI after successful sign-in
-      Value: !GetAtt ParseAuthCodeUpdate.FunctionArn
-      Export:
-        Name: !Join
-          - '-'
-          - - !Ref AWS::StackName
-            - ParseAuthHandler
-    # CheckAuthHandler:
-    #   Description: The Lambda function ARN to use in Lambda@Edge for checking the presence of a valid JWT
-    #   Value: !GetAtt CheckAuthCodeUpdate.FunctionArn
-    #   Export:
-    #     Name: !Join
-    #       - '-'
-    #       - - !Ref AWS::StackName
-    #         - CheckAuthHandler
-    HttpHeadersHandler:
-      Description: The Lambda function ARN to use in Lambda@Edge for setting HTTP security headers
-      Value: !GetAtt HttpHeadersCodeUpdate.FunctionArn
-      Export:
-        Name: !Join
-          - '-'
-          - - !Ref AWS::StackName
-            - HttpHeadersHandler
-    RefreshAuthHandler:
-      Description: The Lambda function ARN to use in Lambda@Edge for getting new JWT's using the refresh token
-      Value: !GetAtt RefreshAuthCodeUpdate.FunctionArn
-      Export:
-        Name: !Join
-          - '-'
-          - - !Ref AWS::StackName
-            - RefreshAuthHandler
-    SignOutHandler:
-      Description: The Lambda function ARN to use in Lambda@Edge for signing out
-      Value: !GetAtt SignOutCodeUpdate.FunctionArn
-      Export:
-        Name: !Join
-          - '-'
-          - - !Ref AWS::StackName
-            - SignOutHandler
-    CodeUpdateHandler:
-      Description: The Lambda function ARN of the custom resource that adds configuration to a function and publishes a version for use as Lambda@Edge
-      Value: !GetAtt LambdaCodeUpdateHandlerLambdaFunction.Arn
-      Export:
-        Name: !Join
-          - '-'
-          - - !Ref AWS::StackName
-            - CodeUpdateHandler
   Resources:
     S3Bucket: ${file(./src/resources/s3.bucket.yml)}
     LambdaEdgeExecutionRole: ${file(./src/resources/lambda_edge_execution.role.yml)}

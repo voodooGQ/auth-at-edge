@@ -36,17 +36,53 @@ export interface Config extends ConfigFromDisk {
   cloudFrontHeaders: CloudFrontHeaders;
 }
 
-export function getConfig(): Config {
-  console.log('IN GETCONFIG');
-  const config = JSON.parse(
-    readFileSync(`${__dirname}/configuration.json`).toString("utf8"),
-  ) as ConfigFromDisk;
+export function getConfig(originCustomHeaders): any {
+  console.log("IN GETCONFIG");
+  const config = {
+    clientId: originCustomHeaders.clientid[0].value,
+    oauthScopes: [
+      "phone",
+      "email",
+      "profile",
+      "openid",
+      "aws.cognito.signin.user.admin",
+    ],
+    cognitoAuthDomain: originCustomHeaders.cognitoauthdomain[0].value,
+    userPoolId: originCustomHeaders.userpoolid[0].value,
+    redirectPathSignIn: "/parseauth",
+    redirectPathAuthRefresh: "/refreshauth",
+    httpHeaders: {
+      "Content-Security-Policy":
+        "default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; connect-src 'self' https://*.amazonaws.com https://*.amazoncognito.com",
+      "Strict-Transport-Security":
+        "max-age=31536000; includeSubdomains; preload",
+      "Referrer-Policy": "same-origin",
+      "X-XSS-Protection": "1; mode=block",
+      "X-Frame-Options": "DENY",
+      "X-Content-Type-Options": "nosniff",
+    },
+    cookieSettings: {
+      idToken: "Path=/; Secure; SameSite=Lax",
+      accessToken: "Path=/; Secure; SameSite=Lax",
+      refreshToken: "Path=/; Secure; SameSite=Lax",
+      nonce: "Path=/; Secure; HttpOnly; Max-Age=1800; SameSite=Lax",
+    },
+  };
+  console.log("Config");
+  console.log(config);
 
   // Derive the issuer and JWKS uri all JWT's will be signed with from the User Pool's ID and region:
   const userPoolRegion = config.userPoolId.match(/^(\S+?)_\S+$/)![1];
+  console.log("UserPoolRegion");
+  console.log(userPoolRegion);
   const tokenIssuer = `https://cognito-idp.${userPoolRegion}.amazonaws.com/${config.userPoolId}`;
+  console.log("tokenIssuer");
+  console.log(tokenIssuer);
   const tokenJwksUri = `${tokenIssuer}/.well-known/jwks.json`;
+  console.log("tokenJwksUri");
+  console.log(tokenJwksUri);
 
+  console.log("END GETCONFIG");
   return {
     ...config,
     tokenIssuer,

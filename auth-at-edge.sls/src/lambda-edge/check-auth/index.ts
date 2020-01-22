@@ -17,26 +17,56 @@ const SECRET_ALLOWED_CHARS =
 const PKCE_LENGTH = 43; // Should be between 43 and 128 - per spec
 const NONCE_LENGTH = 16; // how many characters should your nonces be?
 
-const {
-  clientId,
-  oauthScopes,
-  cognitoAuthDomain,
-  redirectPathSignIn,
-  redirectPathAuthRefresh,
-  tokenIssuer,
-  tokenJwksUri,
-  cookieSettings,
-  cloudFrontHeaders,
-} = getConfig();
+// const {
+//   clientId,
+//   oauthScopes,
+//   cognitoAuthDomain,
+//   redirectPathSignIn,
+//   redirectPathAuthRefresh,
+//   tokenIssuer,
+//   tokenJwksUri,
+//   cookieSettings,
+//   cloudFrontHeaders,
+// } = getConfig();
+// const {
+//   oauthScopes,
+//   redirectPathSignIn,
+//   redirectPathAuthRefresh,
+
+// } = getConfig();
 
 export const handler: CloudFrontRequestHandler = async event => {
+  console.log('CHECK-AUTH HANDLER');
   const request = event.Records[0].cf.request;
-  console.log(request.headers);
+  if (!request.origin) {
+    throw "This must be an origin-request, not a viewer-request";
+  }
+  const origin = request.origin.s3 || request.origin.custom || {};
+  console.log(origin.customHeaders);
+
+  const {
+    clientId,
+    oauthScopes,
+    cognitoAuthDomain,
+    redirectPathSignIn,
+    redirectPathAuthRefresh,
+    tokenIssuer,
+    tokenJwksUri,
+    cookieSettings,
+    cloudFrontHeaders,
+  } = getConfig(origin.customHeaders);
+
   const domainName = request.headers["host"][0].value;
+  console.log('DomainName');
+  console.log(domainName);
   const requestedUri = `${request.uri}${
     request.querystring ? "?" + request.querystring : ""
   }`;
+  console.log('RequestedURI');
+  console.log(requestedUri);
   const nonce = generateNonce();
+  console.log('Nonce');
+  console.log(nonce);
   try {
     const { tokenUserName, idToken, refreshToken } = extractAndParseCookies(
       request.headers,

@@ -63,6 +63,20 @@ Properties:
       Id: dummy-origin
       CustomOriginConfig:
         OriginProtocolPolicy: match-viewer
+      OriginCustomHeaders: [
+        {
+          HeaderName: UserPoolId,
+          HeaderValue: !Ref UserPool
+        },
+        {
+          HeaderName: ClientId,
+          HeaderValue: !Ref UserPoolClient
+        },
+        {
+          HeaderName: CognitoAuthDomain,
+          HeaderValue: !GetAtt UserPoolDomain.DomainName
+        },
+      ]
     CustomErrorResponses:
       - ErrorCode: 403
         ResponseCode: 200
