@@ -24,6 +24,7 @@
     "terser-webpack-plugin": "^2.3.2"
   },
   "devDependencies": {
+    "@silvermine/serverless-plugin-cloudfront-lambda-edge": "2.1.1",
     "@types/aws-lambda": "^8.10.20",
     "@types/cookie": "^0.3.3",
     "@types/jest": "^24.0.20",

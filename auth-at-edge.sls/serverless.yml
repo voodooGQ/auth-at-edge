@@ -1,20 +1,20 @@
-service: private-spa
+service: pspa-debug-4
 
 plugins:
 - serverless-webpack
 - serverless-pseudo-parameters
+- '@silvermine/serverless-plugin-cloudfront-lambda-edge'
 
 provider:
   name: aws
   runtime: nodejs10.x
   region: us-east-1
+  # Lambda@Edge maximum allowed memorySize and timeout
   memorySize: 128
   timeout: 5
 
-# After adding a few functions and associated dependencies, individual function
-# packages can be created to avoid a single massive zip file.
-# This comes at the cost of potential memory issues at build time:
-# https://github.com/serverless-heaven/serverless-webpack/issues/299
+# Need to keep the size under the 1mb Lambda@Edge limit.
+# Individualizing the packages to bring down zip size.
 package:
   individually: true
 
@@ -23,9 +23,6 @@ custom:
     excludeFiles:
       - "src/**/*.test.ts"
       - "src/**/__mocks__/*.ts"
-    # We could exclude aws-sdk here to trim down the deployment package via
-    # webpack-node-externals (see webpack.config.js), but instead we'll
-    # include it so the sdk version used is predictable.
     includeModules:
       forceExclude:
         - aws-sdk
@@ -34,24 +31,42 @@ functions:
   checkAuth:
     handler: src/lambda-edge/check-auth/index.handler
     role: LambdaEdgeExecutionRole
+    lambdaAtEdge:
+      distribution: CloudFrontDistribution
+      eventType: 'viewer-request'
   httpHeaders:
     handler: src/lambda-edge/http-headers/index.handler
     role: LambdaEdgeExecutionRole
+    lambdaAtEdge:
+      distribution: CloudFrontDistribution
+      eventType: 'origin-response'
   parseAuth:
     handler: src/lambda-edge/parse-auth/index.handler
     role: LambdaEdgeExecutionRole
+    lambdaAtEdge:
+      distribution: CloudFrontDistribution
+      eventType: 'viewer-request'
+      pathPattern: /parseauth
   refreshAuth:
     handler: src/lambda-edge/refresh-auth/index.handler
     role: LambdaEdgeExecutionRole
+    lambdaAtEdge:
+      distribution: CloudFrontDistribution
+      eventType: 'viewer-request'
+      pathPattern: /refreshauth
   signOut:
     handler: src/lambda-edge/sign-out/index.handler
     role: LambdaEdgeExecutionRole
+    lambdaAtEdge:
+      distribution: CloudFrontDistribution
+      eventType: 'viewer-request'
+      pathPattern: /
   userPoolDomainHandler:
     handler: src/cfn-custom-resources/user-pool-domain/index.handler
     role: UserPoolDomainHandlerRole
-  lambdaCodeUpdateHandler:
-    handler: src/cfn-custom-resources/lambda-code-update/index.handler
-    role: LambdaCodeUpdateHandlerRole
+  # lambdaCodeUpdateHandler:
+  #   handler: src/cfn-custom-resources/lambda-code-update/index.handler
+  #   role: LambdaCodeUpdateHandlerRole
 
 resources:
   Parameters:
@@ -110,6 +125,83 @@ resources:
       Type: String
       Description: "Use for development: putting in a new version forces redeployment of Lambda@Edge functions"
       Default: "1.0.0"
+
+  Outputs:
+    S3Bucket:
+      Description: The S3 Bucket where the SPA (React, Angular, Vue, ...) is uploaded to
+      Value: !Ref S3Bucket
+    WebsiteUrl:
+      Description: URL of the CloudFront distribution that serves your SPA from S3
+      Value: !Join
+        - '//'
+        - - 'https'
+          - !GetAtt CloudFrontDistribution.DomainName
+    CloudFrontDistribution:
+      Description: ID of the CloudFront distribution that serves your SPA from S3
+      Value: !Ref CloudFrontDistribution
+    UserPoolId:
+      Description: The ID of the Cognito User Pool
+      Value: !Ref UserPool
+    ClientId:
+      Description: Client ID to use to interact with the User Pool
+      Value: !Ref UserPoolClient
+    CognitoAuthDomain:
+      Description: The domain where the Cognito Hosted UI is served
+      Value: !GetAtt UserPoolDomain.DomainName
+    # RedirectUrisSignIn:
+    #   Description: The URI(s) that will handle the redirect from Cognito after successful sign-in
+    #   Value: !GetAtt UserPoolClientUpdate.RedirectUrisSignIn
+    # RedirectUrisSignOut:
+    #   Description: The URI(s) that will handle the redirect from Cognito after successful sign-out
+    #   Value: !GetAtt UserPoolClientUpdate.RedirectUrisSignOut
+    ParseAuthHandler:
+      Description: The Lambda function ARN to use in Lambda@Edge for parsing the URL of the redirect from the Cognito hosted UI after successful sign-in
+      Value: !GetAtt ParseAuthCodeUpdate.FunctionArn
+      Export:
+        Name: !Join
+          - '-'
+          - - !Ref AWS::StackName
+            - ParseAuthHandler
+    # CheckAuthHandler:
+    #   Description: The Lambda function ARN to use in Lambda@Edge for checking the presence of a valid JWT
+    #   Value: !GetAtt CheckAuthCodeUpdate.FunctionArn
+    #   Export:
+    #     Name: !Join
+    #       - '-'
+    #       - - !Ref AWS::StackName
+    #         - CheckAuthHandler
+    HttpHeadersHandler:
+      Description: The Lambda function ARN to use in Lambda@Edge for setting HTTP security headers
+      Value: !GetAtt HttpHeadersCodeUpdate.FunctionArn
+      Export:
+        Name: !Join
+          - '-'
+          - - !Ref AWS::StackName
+            - HttpHeadersHandler
+    RefreshAuthHandler:
+      Description: The Lambda function ARN to use in Lambda@Edge for getting new JWT's using the refresh token
+      Value: !GetAtt RefreshAuthCodeUpdate.FunctionArn
+      Export:
+        Name: !Join
+          - '-'
+          - - !Ref AWS::StackName
+            - RefreshAuthHandler
+    SignOutHandler:
+      Description: The Lambda function ARN to use in Lambda@Edge for signing out
+      Value: !GetAtt SignOutCodeUpdate.FunctionArn
+      Export:
+        Name: !Join
+          - '-'
+          - - !Ref AWS::StackName
+            - SignOutHandler
+    CodeUpdateHandler:
+      Description: The Lambda function ARN of the custom resource that adds configuration to a function and publishes a version for use as Lambda@Edge
+      Value: !GetAtt LambdaCodeUpdateHandlerLambdaFunction.Arn
+      Export:
+        Name: !Join
+          - '-'
+          - - !Ref AWS::StackName
+            - CodeUpdateHandler
   Resources:
     S3Bucket: ${file(./src/resources/s3.bucket.yml)}
     LambdaEdgeExecutionRole: ${file(./src/resources/lambda_edge_execution.role.yml)}
@@ -120,10 +212,11 @@ resources:
     UserPoolClient: ${file(./src/resources/default.userpoolclient.yml)}
     UserPoolDomainHandlerRole: ${file(./src/resources/user_pool_domain_handler.role.yml)}
     UserPoolDomain: ${file(./src/resources/default.userpooldomain.yml)}
-    LambdaCodeUpdateHandlerRole: ${file(./src/resources/lambda_code_update_handler.role.yml)}
-    ParseAuthCodeUpdate: ${file(./src/lambda-edge/parse-auth/code_update.yml)}
+    # LambdaCodeUpdateHandlerRole: ${file(./src/resources/lambda_code_update_handler.role.yml)}
+    # ParseAuthCodeUpdate: ${file(./src/lambda-edge/parse-auth/code_update.yml)}
     # CheckAuthCodeUpdate: ${file(./src/lambda-edge/check-auth/code_update.yml)}
-    HttpHeadersCodeUpdate: ${file(./src/lambda-edge/http-headers/code_update.yml)}
-    RefreshAuthCodeUpdate: ${file(./src/lambda-edge/refresh-auth/code_update.yml)}
-    SignOutCodeUpdate: ${file(./src/lambda-edge/sign-out/code_update.yml)}
+    # HttpHeadersCodeUpdate: ${file(./src/lambda-edge/http-headers/code_update.yml)}
+    # RefreshAuthCodeUpdate: ${file(./src/lambda-edge/refresh-auth/code_update.yml)}
+    # SignOutCodeUpdate: ${file(./src/lambda-edge/sign-out/code_update.yml)}
+    DistributionLogBucket: ${file(./src/resources/distribution.bucket.yml)}
     CloudFrontDistribution: ${file(./src/resources/cloudfront.distribution.yml)}

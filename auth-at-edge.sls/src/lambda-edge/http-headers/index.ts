@@ -9,6 +9,7 @@ const configuredHeaders = getConfiguredHeaders();
 
 export const handler: CloudFrontResponseHandler = async event => {
   const resp = event.Records[0].cf.response;
+  console.log(resp.headers);
   Object.assign(resp.headers, configuredHeaders);
   return resp;
 };

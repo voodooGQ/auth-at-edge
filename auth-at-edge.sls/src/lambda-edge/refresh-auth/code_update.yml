@@ -8,7 +8,7 @@ Properties:
     {
       "userPoolId": "#{UserPool}",
       "clientId": "#{UserPoolClient}",
-      "oauthScopes": "#{OAuthScopes}"
+      "oauthScopes": #{OAuthScopes},
       "cognitoAuthDomain": "#{UserPoolDomain.DomainName}",
       "redirectPathSignIn": "#{RedirectPathSignIn}",
       "redirectPathSignOut": "#{RedirectPathSignOut}",

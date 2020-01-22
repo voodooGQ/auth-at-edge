@@ -66,6 +66,7 @@ async function updateLambdaCode(
     ZipFile: newLambdaZip.toBuffer(),
     Publish: true,
   }).promise();
+
   console.log({ CodeSha256, Version, FunctionArn });
   return {
     physicalResourceId: lambdaFunction,
@@ -105,7 +106,9 @@ export const handler: CloudFormationCustomResourceHandler = async event => {
       StackId,
       Data,
     };
+    console.log("SUCCESS");
   } catch (err) {
+    console.log("FAILED");
     response = {
       LogicalResourceId,
       PhysicalResourceId:

@@ -24,6 +24,7 @@ const {
 
 export const handler: CloudFrontRequestHandler = async event => {
   const request = event.Records[0].cf.request;
+  console.log(request.headers);
   const domainName = request.headers["host"][0].value;
   let redirectedFromUri = `https://${domainName}`;
 

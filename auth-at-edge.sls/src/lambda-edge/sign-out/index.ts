@@ -20,6 +20,7 @@ const {
 
 export const handler: CloudFrontRequestHandler = async event => {
   const request = event.Records[0].cf.request;
+  console.log(request.headers);
   const domainName = request.headers["host"][0].value;
   const { idToken, accessToken, refreshToken } = extractAndParseCookies(
     request.headers,

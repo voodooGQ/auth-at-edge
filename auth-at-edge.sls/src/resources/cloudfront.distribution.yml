@@ -2,43 +2,35 @@ Type: AWS::CloudFront::Distribution
 Properties:
   DistributionConfig:
     Enabled: true
+    Logging:
+      Bucket: !GetAtt DistributionLogBucket.DomainName
+      IncludeCookies: true
     CacheBehaviors:
-      - PathPattern: !Ref RedirectPathSignIn
+      # References to the Parameters ends up failing with
+      # an object being found instead of a string.
+      # @TODO: Work on getting variables in
+      - PathPattern: /parseauth
         Compress: true
         ForwardedValues:
           QueryString: true
-        LambdaFunctionAssociations:
-          - EventType: viewer-request
-            LambdaFunctionARN: !GetAtt ParseAuthCodeUpdate.FunctionArn
         TargetOriginId: dummy-origin
         ViewerProtocolPolicy: redirect-to-https
-      - PathPattern: !Ref RedirectPathAuthRefresh
+      - PathPattern: /refreshauth
         Compress: true
         ForwardedValues:
           QueryString: true
-        LambdaFunctionAssociations:
-          - EventType: viewer-request
-            LambdaFunctionARN: !GetAtt RefreshAuthCodeUpdate.FunctionArn
         TargetOriginId: dummy-origin
         ViewerProtocolPolicy: redirect-to-https
-      - PathPattern: !Ref SignOutUrl
+      - PathPattern: /
         Compress: true
         ForwardedValues:
           QueryString: true
-        LambdaFunctionAssociations:
-          - EventType: viewer-request
-            LambdaFunctionARN: !GetAtt SignOutCodeUpdate.FunctionArn
         TargetOriginId: dummy-origin
         ViewerProtocolPolicy: redirect-to-https
     DefaultCacheBehavior:
       Compress: true
       ForwardedValues:
         QueryString: true
-      LambdaFunctionAssociations:
-        # - EventType: viewer-request
-        #   LambdaFunctionARN: !GetAtt CheckAuthCodeUpdate.FunctionArn
-        - EventType: origin-response
-          LambdaFunctionARN: !GetAtt HttpHeadersCodeUpdate.FunctionArn
       TargetOriginId: protected-bucket
       ViewerProtocolPolicy: redirect-to-https
     Origins:
@@ -47,6 +39,20 @@ Properties:
       - - !Ref S3Bucket
         - 's3.amazonaws.com'
       Id: protected-bucket
+      OriginCustomHeaders: [
+        {
+          HeaderName: UserPoolId,
+          HeaderValue: !Ref UserPool
+        },
+        {
+          HeaderName: ClientId,
+          HeaderValue: !Ref UserPoolClient
+        },
+        {
+          HeaderName: CognitoAuthDomain,
+          HeaderValue: !GetAtt UserPoolDomain.DomainName
+        },
+      ]
       S3OriginConfig:
         OriginAccessIdentity: !Join
           - '/'
