@@ -20,12 +20,30 @@ const {
 
 export const handler: CloudFrontRequestHandler = async event => {
   const request = event.Records[0].cf.request;
-  console.log(request.headers);
+  if (!request.origin) {
+    throw "This must be an origin-request, not a viewer-request";
+  }
+  const origin = request.origin.s3 || request.origin.custom || {};
+  console.log(origin.customHeaders);
+  const {
+    clientId,
+    oauthScopes,
+    cognitoAuthDomain,
+    cookieSettings,
+    cloudFrontHeaders,
+    redirectPathSignOut,
+  } = getConfig(origin.customHeaders);
   const domainName = request.headers["host"][0].value;
   const { idToken, accessToken, refreshToken } = extractAndParseCookies(
     request.headers,
     clientId,
   );
+  console.log('IDToken');
+  console.log(idToken);
+  console.log('AccessToken');
+  console.log(accessToken);
+  console.log('RefreshToken');
+  console.log(refreshToken);
 
   if (!idToken) {
     return {

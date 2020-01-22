@@ -1,7 +1,0 @@
----
-Type: Custom::LambdaCodeUpdate
-Properties:
-  ServiceToken: !GetAtt LambdaCodeUpdateHandlerLambdaFunction.Arn
-  LambdaFunction: !GetAtt HttpHeadersLambdaFunction.Arn
-  Version: !Ref Version
-  Configuration: !Ref HttpHeaders

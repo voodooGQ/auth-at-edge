@@ -51,6 +51,7 @@ export function getConfig(originCustomHeaders): any {
     userPoolId: originCustomHeaders.userpoolid[0].value,
     redirectPathSignIn: "/parseauth",
     redirectPathAuthRefresh: "/refreshauth",
+    redirectPathSignOut: "/signout",
     httpHeaders: {
       "Content-Security-Policy":
         "default-src 'none'; img-src 'self'; script-src 'self'; style-src 'self'; object-src 'none'; connect-src 'self' https://*.amazonaws.com https://*.amazoncognito.com",
