@@ -9,16 +9,8 @@ import {
   getCookieHeaders,
 } from "../shared/shared";
 
-const {
-  clientId,
-  oauthScopes,
-  cognitoAuthDomain,
-  cookieSettings,
-  cloudFrontHeaders,
-  redirectPathSignOut,
-} = getConfig();
-
 export const handler: CloudFrontRequestHandler = async event => {
+  console.log("SIGNOUT HANDLER");
   const request = event.Records[0].cf.request;
   if (!request.origin) {
     throw "This must be an origin-request, not a viewer-request";
@@ -38,11 +30,11 @@ export const handler: CloudFrontRequestHandler = async event => {
     request.headers,
     clientId,
   );
-  console.log('IDToken');
+  console.log("IDToken");
   console.log(idToken);
-  console.log('AccessToken');
+  console.log("AccessToken");
   console.log(accessToken);
-  console.log('RefreshToken');
+  console.log("RefreshToken");
   console.log(refreshToken);
 
   if (!idToken) {
@@ -63,6 +55,8 @@ export const handler: CloudFrontRequestHandler = async event => {
     logout_uri: `https://${domainName}${redirectPathSignOut}`,
     client_id: clientId,
   };
+  console.log("QueryString");
+  console.log(qs);
 
   return {
     status: "307",
