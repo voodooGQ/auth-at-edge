@@ -129,32 +129,36 @@ export const handler: CloudFrontRequestHandler = async event => {
     });
     console.log("LoginQueryString");
     console.log(loginQueryString);
+    const newHeaders = {
+      location: [
+        {
+          key: "location",
+          value: `https://${cognitoAuthDomain}/oauth2/authorize?${loginQueryString}`,
+        },
+      ],
+      "set-cookie": [
+        {
+          key: "set-cookie",
+          value: `spa-auth-edge-nonce=${encodeURIComponent(nonce)}; ${
+            cookieSettings.nonce
+          }`,
+        },
+        {
+          key: "set-cookie",
+          value: `spa-auth-edge-pkce=${encodeURIComponent(pkce)}; ${
+            cookieSettings.nonce
+          }`,
+        },
+      ],
+      ...cloudFrontHeaders,
+    };
+
+    console.log(newHeaders);
+
     return {
       status: "307",
       statusDescription: "Temporary Redirect",
-      headers: {
-        location: [
-          {
-            key: "location",
-            value: `https://${cognitoAuthDomain}/oauth2/authorize?${loginQueryString}`,
-          },
-        ],
-        "set-cookie": [
-          {
-            key: "set-cookie",
-            value: `spa-auth-edge-nonce=${encodeURIComponent(nonce)}; ${
-              cookieSettings.nonce
-            }`,
-          },
-          {
-            key: "set-cookie",
-            value: `spa-auth-edge-pkce=${encodeURIComponent(pkce)}; ${
-              cookieSettings.nonce
-            }`,
-          },
-        ],
-        ...cloudFrontHeaders,
-      },
+      headers: newHeaders,
     };
   }
 };
