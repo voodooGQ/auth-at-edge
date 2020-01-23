@@ -38,6 +38,7 @@ export interface Config extends ConfigFromDisk {
 
 export function getConfig(originCustomHeaders): any {
   console.log("IN GETCONFIG");
+  // @TODO: Convert these into custom origin headers fed by the serverless/runway templates
   const config = {
     clientId: originCustomHeaders.clientid[0].value,
     oauthScopes: [
@@ -95,6 +96,9 @@ export function getConfig(originCustomHeaders): any {
 type Cookies = { [key: string]: string };
 
 function extractCookiesFromHeaders(headers: CloudFrontHeaders) {
+  console.log("IN EXTRACTCOOKIESFROMHEADERS");
+  console.log("headers.cookie");
+  console.log(headers["cookie"]);
   // Cookies are present in the HTTP header "Cookie" that may be present multiple times.
   // This utility function parses occurrences  of that header and splits out all the cookies and their values
   // A simple object is returned that allows easy access by cookie name: e.g. cookies["nonce"]
@@ -139,7 +143,10 @@ export function extractAndParseCookies(
   headers: CloudFrontHeaders,
   clientId: string,
 ) {
+  console.log("IN EXTRACTANDPARSECOOKIES")
   const cookies = extractCookiesFromHeaders(headers);
+  console.log("Cookies");
+  console.log(cookies);
   if (!cookies) {
     return {};
   }

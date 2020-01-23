@@ -72,6 +72,12 @@ export const handler: CloudFrontRequestHandler = async event => {
       request.headers,
       clientId,
     );
+    console.log('TokenUserName');
+    console.log(tokenUserName);
+    console.log('idToken');
+    console.log(idToken);
+    console.log('refreshToken');
+    console.log(refreshToken);
     if (!tokenUserName || !idToken) {
       throw new Error("No valid credentials present in cookies");
     }
@@ -108,6 +114,10 @@ export const handler: CloudFrontRequestHandler = async event => {
     return request;
   } catch (err) {
     const { pkce, pkceHash } = generatePkceVerifier();
+    console.log("pkce");
+    console.log(pkce);
+    console.log("pkcehash");
+    console.log(pkceHash);
     const loginQueryString = stringifyQueryString({
       redirect_uri: `https://${domainName}${redirectPathSignIn}`,
       response_type: "code",
@@ -117,6 +127,8 @@ export const handler: CloudFrontRequestHandler = async event => {
       code_challenge_method: "S256",
       code_challenge: pkceHash,
     });
+    console.log("LoginQueryString");
+    console.log(loginQueryString);
     return {
       status: "307",
       statusDescription: "Temporary Redirect",

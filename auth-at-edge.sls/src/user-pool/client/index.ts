@@ -65,6 +65,7 @@ async function ensureCognitoUserPoolClient(
 }
 
 export const handler: CloudFormationCustomResourceHandler = async event => {
+  console.log("START USER_POOL_CLIENT_UPDATE_HANDLER");
   console.log(JSON.stringify(event, undefined, 4));
   const {
     LogicalResourceId,
@@ -110,6 +111,8 @@ export const handler: CloudFormationCustomResourceHandler = async event => {
       StackId,
       Data,
     };
+    console.log("SUCCESS");
+    console.log(response);
   } catch (err) {
     response = {
       LogicalResourceId,
@@ -120,6 +123,9 @@ export const handler: CloudFormationCustomResourceHandler = async event => {
       RequestId,
       StackId,
     };
+    console.log("FAILED");
+    console.log(response);
   }
   await axios.put(ResponseURL, response, { headers: { "content-type": "" } });
+  console.log("END USER_POOL_CLIENT_UPDATE_HANDLER");
 };

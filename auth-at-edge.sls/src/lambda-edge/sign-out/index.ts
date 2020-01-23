@@ -26,6 +26,10 @@ export const handler: CloudFrontRequestHandler = async event => {
     redirectPathSignOut,
   } = getConfig(origin.customHeaders);
   const domainName = request.headers["host"][0].value;
+  console.log("RequestHeaders");
+  console.log(request.headers);
+  console.log("DomainName");
+  console.log(domainName);
   const { idToken, accessToken, refreshToken } = extractAndParseCookies(
     request.headers,
     clientId,

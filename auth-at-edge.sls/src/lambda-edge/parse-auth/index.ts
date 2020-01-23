@@ -14,23 +14,35 @@ import {
   createErrorHtml,
 } from "../shared/shared";
 
-const {
-  clientId,
-  oauthScopes,
-  cognitoAuthDomain,
-  redirectPathSignIn,
-  cookieSettings,
-  cloudFrontHeaders,
-} = getConfig();
-
 export const handler: CloudFrontRequestHandler = async event => {
+  console.log("PARSE AUTH HANDLER");
   const request = event.Records[0].cf.request;
-  console.log(request.headers);
+  if (!request.origin) {
+    throw "This must be an origin-request, not a viewer-request";
+  }
+  const origin = request.origin.s3 || request.origin.custom || {};
+  console.log(origin.customHeaders);
+  const {
+    clientId,
+    oauthScopes,
+    cognitoAuthDomain,
+    cookieSettings,
+    cloudFrontHeaders,
+    redirectPathSignIn,
+  } = getConfig(origin.customHeaders);
   const domainName = request.headers["host"][0].value;
+  console.log("DomainName");
+  console.log(domainName)
   let redirectedFromUri = `https://${domainName}`;
+  console.log("RedirectedFromUri");
+  console.log(redirectedFromUri);
 
   try {
     const { code, state } = parseQueryString(request.querystring);
+    console.log("Code");
+    console.log(code);
+    console.log("State");
+    console.log(state);
     if (
       !code ||
       !state ||

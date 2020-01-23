@@ -1,0 +1,11 @@
+---
+Type: Custom::UserPoolClientUpdate
+Properties:
+  ServiceToken: !GetAtt UserPoolClientUpdateHandlerLambdaFunction.Arn
+  UserPoolId: !Ref UserPool
+  UserPoolClientId: !Ref UserPoolClient
+  CloudFrontDistributionDomainName: !GetAtt CloudFrontDistribution.DomainName
+  RedirectPathSignIn: !Ref RedirectPathSignIn
+  RedirectPathSignOut: !Ref RedirectPathSignOut
+  AlternateDomainNames: []
+  OAuthScopes: !Ref OAuthScopes

@@ -1,4 +1,4 @@
-service: pspa-debug-5
+service: pspa-debug-6
 
 plugins:
 - serverless-webpack
@@ -62,8 +62,11 @@ functions:
       eventType: 'origin-request'
       pathPattern: /
   userPoolDomainHandler:
-    handler: src/cfn-custom-resources/user-pool-domain/index.handler
+    handler: src/user-pool/domain/index.handler
     role: UserPoolDomainHandlerRole
+  userPoolClientUpdateHandler:
+    handler: src/user-pool/client/index.handler
+    role: UserPoolClientUpdateHandlerRole
 
 resources:
   Parameters:
@@ -146,14 +149,16 @@ resources:
       Description: The domain where the Cognito Hosted UI is served
       Value: !GetAtt UserPoolDomain.DomainName
   Resources:
-    S3Bucket: ${file(./src/resources/s3.bucket.yml)}
-    LambdaEdgeExecutionRole: ${file(./src/resources/lambda_edge_execution.role.yml)}
-    CloudFrontOriginAccessIdentity: ${file(./src/resources/cloudfront.oai.yml)}
-    CloudFrontBucketPolicy: ${file(./src/resources/cloudfront.bucket_policy.yml)}
-    UserPool: ${file(./src/resources/default.userpool.yml)}
-    User: ${file(./src/resources/default.userpooluser.yml)}
-    UserPoolClient: ${file(./src/resources/default.userpoolclient.yml)}
-    UserPoolDomainHandlerRole: ${file(./src/resources/user_pool_domain_handler.role.yml)}
-    UserPoolDomain: ${file(./src/resources/default.userpooldomain.yml)}
-    DistributionLogBucket: ${file(./src/resources/distribution.bucket.yml)}
-    CloudFrontDistribution: ${file(./src/resources/cloudfront.distribution.yml)}
+    S3Bucket: ${file(./src/single-page-app/bucket.yml)}
+    LambdaEdgeExecutionRole: ${file(./src/lambda-edge/execution-role.yml)}
+    CloudFrontOriginAccessIdentity: ${file(./src/cloudfront/origin-access-identity.yml)}
+    CloudFrontBucketPolicy: ${file(./src/single-page-app/bucket-policy.yml)}
+    UserPool: ${file(./src/user-pool/user-pool.yml)}
+    User: ${file(./src/user-pool/user.yml)}
+    UserPoolClient: ${file(./src/user-pool/client/client.yml)}
+    UserPoolDomainHandlerRole: ${file(./src/user-pool/domain/domain-handler-role.yml)}
+    UserPoolDomain: ${file(./src/user-pool/domain/domain.yml)}
+    DistributionLogBucket: ${file(./src/cloudfront/log-bucket.yml)}
+    CloudFrontDistribution: ${file(./src/cloudfront/distribution.yml)}
+    UserPoolClientUpdateHandlerRole: ${file(./src/user-pool/client/update-handler-role.yml)}
+    UserPoolClientUpdate: ${file(./src/user-pool/client/update.yml)}
