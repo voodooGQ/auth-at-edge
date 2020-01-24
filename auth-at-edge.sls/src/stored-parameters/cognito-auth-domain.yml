@@ -1,0 +1,7 @@
+---
+Type: AWS::SSM::Parameter
+Properties:
+  Name: 'cognito-auth-domain'
+  Description: "The authorization domain for the Cognito pool"
+  Value: !GetAtt UserPoolDomain.DomainName
+  Type: String

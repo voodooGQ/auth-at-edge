@@ -12,6 +12,7 @@ Properties:
         Action:
           - sts:AssumeRole
   Policies:
+    # @TODO: Tighten up
     - PolicyName: CreateAndWriteToLogStream
       PolicyDocument:
         Version: '2012-10-17'
@@ -20,6 +21,15 @@ Properties:
             Action:
               - logs:CreateLogStream
               - logs:PutLogEvents
+            Resource: '*'
+    # @TODO: Tighten up
+    - PolicyName: ReadParameters
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Action:
+              - ssm:GetParameter
             Resource: '*'
   ManagedPolicyArns:
     - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole

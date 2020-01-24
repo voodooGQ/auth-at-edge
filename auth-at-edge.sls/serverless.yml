@@ -162,3 +162,6 @@ resources:
     CloudFrontDistribution: ${file(./src/cloudfront/distribution.yml)}
     UserPoolClientUpdateHandlerRole: ${file(./src/user-pool/client/update-handler-role.yml)}
     UserPoolClientUpdate: ${file(./src/user-pool/client/update.yml)}
+    StoredParameterClientId: ${file(./src/stored-parameters/client-id.yml)}
+    StoredParameterCognitoAuthDomain: ${file(./src/stored-parameters/cognito-auth-domain.yml)}
+    StoredParameterUserPoolId: ${file(./src/stored-parameters/user-pool-id.yml)}

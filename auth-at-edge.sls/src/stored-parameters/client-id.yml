@@ -1,0 +1,7 @@
+---
+Type: AWS::SSM::Parameter
+Properties:
+  Name: 'client-id'
+  Description: "The client id for the user pool"
+  Value: !Ref UserPoolClient
+  Type: String

@@ -1,0 +1,7 @@
+---
+Type: AWS::SSM::Parameter
+Properties:
+  Name: 'user-pool-id'
+  Description: "The ID of the Cognito User Pool"
+  Value: !Ref UserPool
+  Type: String

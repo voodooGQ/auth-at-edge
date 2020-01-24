@@ -39,7 +39,7 @@ export const handler: CloudFrontRequestHandler = async event => {
     tokenJwksUri,
     cookieSettings,
     cloudFrontHeaders,
-  } = getConfig(origin.customHeaders);
+  } = await getConfig(origin.customHeaders);
 
   console.log('request.headers');
   console.log(request.headers);

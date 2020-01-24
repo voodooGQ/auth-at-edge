@@ -1,11 +1,13 @@
+import { GetParameterResult } from "aws-sdk/clients/ssm";
 // Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
 import { CloudFrontHeaders } from "aws-lambda";
-import { readFileSync } from "fs";
+import { SSM } from "aws-sdk";
 import { parse } from "cookie";
 import axios, { AxiosRequestConfig, AxiosResponse } from "axios";
 import { Agent } from "https";
+import { GetParameterResult } from "aws-sdk/clients/ssm";
 
 export interface CookieSettings {
   idToken: string;
@@ -36,11 +38,34 @@ export interface Config extends ConfigFromDisk {
   cloudFrontHeaders: CloudFrontHeaders;
 }
 
-export function getConfig(originCustomHeaders): any {
+// @TODO: Defaulting to us-east-1 for POC. Will need to introduce a replicator
+// for the ssm parameters in a production version as no way to pass the
+// region where the values are stored.
+const ssm = new SSM({ region: "us-east-1" });
+
+export async function getParameterValue(
+  parameterName: string,
+): Promise<string> {
+  console.log("IN GET_PARAMETER_VALUE");
+  const r: GetParameterResult = await ssm
+    .getParameter({ Name: parameterName })
+    .promise();
+  console.log(r);
+
+  if (!r.Parameter || !r.Parameter.Value) {
+    const msg = `Could not retrieve a value for the ${parameterName} parameter`;
+    console.log(msg);
+    throw new Error(msg);
+  }
+  console.log("END GET_PARAMETER_VALUE");
+  return r.Parameter.Value;
+}
+
+export async function getConfig(originCustomHeaders): Promise<any> {
   console.log("IN GETCONFIG");
-  // @TODO: Convert these into custom origin headers fed by the serverless/runway templates
+
   const config = {
-    clientId: originCustomHeaders.clientid[0].value,
+    clientId: await getParameterValue("client-id"),
     oauthScopes: [
       "phone",
       "email",
@@ -48,8 +73,8 @@ export function getConfig(originCustomHeaders): any {
       "openid",
       "aws.cognito.signin.user.admin",
     ],
-    cognitoAuthDomain: originCustomHeaders.cognitoauthdomain[0].value,
-    userPoolId: originCustomHeaders.userpoolid[0].value,
+    cognitoAuthDomain: await getParameterValue("cognito-auth-domain"),
+    userPoolId: await getParameterValue("user-pool-id"),
     redirectPathSignIn: "/parseauth",
     redirectPathAuthRefresh: "/refreshauth",
     redirectPathSignOut: "/signout",
@@ -85,12 +110,12 @@ export function getConfig(originCustomHeaders): any {
   console.log(tokenJwksUri);
 
   console.log("END GETCONFIG");
-  return {
+  return Promise.resolve({
     ...config,
     tokenIssuer,
     tokenJwksUri,
     cloudFrontHeaders: asCloudFrontHeaders(config.httpHeaders),
-  };
+  });
 }
 
 type Cookies = { [key: string]: string };
@@ -143,7 +168,7 @@ export function extractAndParseCookies(
   headers: CloudFrontHeaders,
   clientId: string,
 ) {
-  console.log("IN EXTRACTANDPARSECOOKIES")
+  console.log("IN EXTRACTANDPARSECOOKIES");
   const cookies = extractCookiesFromHeaders(headers);
   console.log("Cookies");
   console.log(cookies);
