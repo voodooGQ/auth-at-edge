@@ -14,17 +14,18 @@ import {
   createErrorHtml,
 } from "../shared/shared";
 
-const {
-  clientId,
-  oauthScopes,
-  cognitoAuthDomain,
-  cookieSettings,
-  cloudFrontHeaders,
-} = getConfig();
-
 export const handler: CloudFrontRequestHandler = async event => {
   const request = event.Records[0].cf.request;
-  console.log(request.headers);
+
+  const {
+    clientId,
+    oauthScopes,
+    cognitoAuthDomain,
+    cookieSettings,
+    cloudFrontHeaders,
+  } = await getConfig();
+
+  console.log(request);
   const domainName = request.headers["host"][0].value;
   let redirectedFromUri = `https://${domainName}`;
 

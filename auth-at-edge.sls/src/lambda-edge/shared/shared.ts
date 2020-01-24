@@ -1,4 +1,3 @@
-import { GetParameterResult } from "aws-sdk/clients/ssm";
 // Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
@@ -42,7 +41,7 @@ export interface Config extends ConfigFromDisk {
 // for the ssm parameters in a production version as no way to pass the
 // region where the values are stored.
 const ssm = new SSM({ region: "us-east-1" });
-
+// @TODO: https://docs.aws.amazon.com/systems-manager/latest/userguide/parameter-store-throughput.html <-- Increase throughput possibly
 export async function getParameterValue(
   parameterName: string,
 ): Promise<string> {
@@ -61,7 +60,7 @@ export async function getParameterValue(
   return r.Parameter.Value;
 }
 
-export async function getConfig(originCustomHeaders): Promise<any> {
+export async function getConfig(): Promise<any> {
   console.log("IN GETCONFIG");
 
   const config = {

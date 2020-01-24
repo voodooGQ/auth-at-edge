@@ -1,13 +1,16 @@
+import { HttpHeaders } from "./../shared/shared";
 // Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: MIT-0
 
-import { readFileSync } from "fs";
 import { CloudFrontResponseHandler, CloudFrontHeaders } from "aws-lambda";
-import { HttpHeaders, asCloudFrontHeaders } from "../shared/shared";
-
-const configuredHeaders = getConfiguredHeaders();
+import { getConfig, asCloudFrontHeaders } from "../shared/shared";
 
 export const handler: CloudFrontResponseHandler = async event => {
+  const config = await getConfig();
+  const headers = config.httpHeaders as HttpHeaders;
+  const configuredHeaders: CloudFrontHeaders = asCloudFrontHeaders(headers);
+  console.log("configuredHeaders");
+  console.log(configuredHeaders);
   const resp = event.Records[0].cf.response;
   console.log("http-headers handler");
   console.log("event");
@@ -25,10 +28,3 @@ export const handler: CloudFrontResponseHandler = async event => {
   Object.assign(resp.headers, configuredHeaders);
   return resp;
 };
-
-function getConfiguredHeaders(): CloudFrontHeaders {
-  const headers = JSON.parse(
-    readFileSync(`${__dirname}/configuration.json`).toString("utf8"),
-  ) as HttpHeaders;
-  return asCloudFrontHeaders(headers);
-}

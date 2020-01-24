@@ -21,13 +21,6 @@ export const handler: CloudFrontRequestHandler = async event => {
   console.log("CHECK-AUTH HANDLER");
   const config = event.Records[0].cf.config;
   const request = event.Records[0].cf.request;
-  console.log("request");
-  console.log(request);
-  if (!request.origin) {
-    throw "This must be an origin-request, not a viewer-request";
-  }
-  const origin = request.origin.s3 || request.origin.custom || {};
-  console.log(origin.customHeaders);
 
   const {
     clientId,
@@ -39,7 +32,7 @@ export const handler: CloudFrontRequestHandler = async event => {
     tokenJwksUri,
     cookieSettings,
     cloudFrontHeaders,
-  } = await getConfig(origin.customHeaders);
+  } = await getConfig();
 
   console.log('request.headers');
   console.log(request.headers);
@@ -50,7 +43,7 @@ export const handler: CloudFrontRequestHandler = async event => {
   console.log(domainName);
 
   // @TODO: This is the distribution domain name that matches what's in cognito
-  const distributionDomainName = config.distributionDomainName;
+  // const distributionDomainName = config.distributionDomainName;
 
   const requestedUri = `${request.uri}${
     request.querystring ? "?" + request.querystring : ""
@@ -118,8 +111,8 @@ export const handler: CloudFrontRequestHandler = async event => {
       // we added in the domain handler. Attempting a switch to
       // ${distributionDomainName} to see if we get appropriate
       // results.
-      // redirect_uri: `https://${domainName}${redirectPathSignIn}`,
-      redirect_uri: `https://${distributionDomainName}${redirectPathSignIn}`,
+      redirect_uri: `https://${domainName}${redirectPathSignIn}`,
+      // redirect_uri: `https://${distributionDomainName}${redirectPathSignIn}`,
       response_type: "code",
       client_id: clientId,
       state: JSON.stringify({ nonce, requestedUri }),

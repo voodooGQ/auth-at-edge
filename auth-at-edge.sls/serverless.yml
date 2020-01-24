@@ -33,7 +33,7 @@ functions:
     role: LambdaEdgeExecutionRole
     lambdaAtEdge:
       distribution: CloudFrontDistribution
-      eventType: 'origin-request'
+      eventType: 'viewer-request'
   httpHeaders:
     handler: src/lambda-edge/http-headers/index.handler
     role: LambdaEdgeExecutionRole
@@ -45,21 +45,21 @@ functions:
     role: LambdaEdgeExecutionRole
     lambdaAtEdge:
       distribution: CloudFrontDistribution
-      eventType: 'origin-request'
+      eventType: 'viewer-request'
       pathPattern: /parseauth
   refreshAuth:
     handler: src/lambda-edge/refresh-auth/index.handler
     role: LambdaEdgeExecutionRole
     lambdaAtEdge:
       distribution: CloudFrontDistribution
-      eventType: 'origin-request'
+      eventType: 'viewer-request'
       pathPattern: /refreshauth
   signOut:
     handler: src/lambda-edge/sign-out/index.handler
     role: LambdaEdgeExecutionRole
     lambdaAtEdge:
       distribution: CloudFrontDistribution
-      eventType: 'origin-request'
+      eventType: 'viewer-request'
       pathPattern: /
   userPoolDomainHandler:
     handler: src/user-pool/domain/index.handler

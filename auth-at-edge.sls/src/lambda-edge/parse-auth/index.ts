@@ -17,11 +17,6 @@ import {
 export const handler: CloudFrontRequestHandler = async event => {
   console.log("PARSE AUTH HANDLER");
   const request = event.Records[0].cf.request;
-  if (!request.origin) {
-    throw "This must be an origin-request, not a viewer-request";
-  }
-  const origin = request.origin.s3 || request.origin.custom || {};
-  console.log(origin.customHeaders);
   const {
     clientId,
     oauthScopes,
@@ -29,7 +24,7 @@ export const handler: CloudFrontRequestHandler = async event => {
     cookieSettings,
     cloudFrontHeaders,
     redirectPathSignIn,
-  } = getConfig(origin.customHeaders);
+  } = await getConfig();
   const domainName = request.headers["host"][0].value;
   console.log("DomainName");
   console.log(domainName)
