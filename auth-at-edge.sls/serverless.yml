@@ -29,38 +29,38 @@ custom:
 
 functions:
   checkAuth:
-    handler: src/lambda-edge/check-auth/index.handler
+    handler: src/lambda-edge/check-auth.handler
     role: LambdaEdgeExecutionRole
     lambdaAtEdge:
       distribution: CloudFrontDistribution
       eventType: 'viewer-request'
   httpHeaders:
-    handler: src/lambda-edge/http-headers/index.handler
+    handler: src/lambda-edge/http-headers.handler
     role: LambdaEdgeExecutionRole
     lambdaAtEdge:
       distribution: CloudFrontDistribution
       eventType: 'origin-response'
   parseAuth:
-    handler: src/lambda-edge/parse-auth/index.handler
+    handler: src/lambda-edge/parse-auth.handler
     role: LambdaEdgeExecutionRole
     lambdaAtEdge:
       distribution: CloudFrontDistribution
       eventType: 'viewer-request'
       pathPattern: /parseauth
   refreshAuth:
-    handler: src/lambda-edge/refresh-auth/index.handler
+    handler: src/lambda-edge/refresh-auth.handler
     role: LambdaEdgeExecutionRole
     lambdaAtEdge:
       distribution: CloudFrontDistribution
       eventType: 'viewer-request'
       pathPattern: /refreshauth
   signOut:
-    handler: src/lambda-edge/sign-out/index.handler
+    handler: src/lambda-edge/sign-out.handler
     role: LambdaEdgeExecutionRole
     lambdaAtEdge:
       distribution: CloudFrontDistribution
       eventType: 'viewer-request'
-      pathPattern: /
+      pathPattern: /signout
   userPoolDomainHandler:
     handler: src/user-pool/domain/index.handler
     role: UserPoolDomainHandlerRole

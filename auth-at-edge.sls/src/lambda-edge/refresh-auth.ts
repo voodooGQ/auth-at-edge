@@ -12,7 +12,7 @@ import {
   getCookieHeaders,
   httpPostWithRetry,
   createErrorHtml,
-} from "../shared/shared";
+} from "./shared";
 
 export const handler: CloudFrontRequestHandler = async event => {
   const request = event.Records[0].cf.request;
@@ -25,7 +25,6 @@ export const handler: CloudFrontRequestHandler = async event => {
     cloudFrontHeaders,
   } = await getConfig();
 
-  console.log(request);
   const domainName = request.headers["host"][0].value;
   let redirectedFromUri = `https://${domainName}`;
 
@@ -115,16 +114,21 @@ function validateRefreshRequest(
   refreshToken?: string,
 ) {
   if (!originalNonce) {
-    throw new Error(
-      "Your browser didn't send the nonce cookie along, but it is required for security (prevent CSRF).",
-    );
+    const msg =
+      "Your browser didn't send the nonce cookie along, but it is required for security (prevent CSRF).";
+    console.error(msg);
+    throw new Error(msg);
   } else if (currentNonce !== originalNonce) {
-    throw new Error("Nonce mismatch");
+    const msg = "Nonce mismatch";
+    console.error(msg);
+    throw new Error(msg);
   }
   Object.entries({ idToken, accessToken, refreshToken }).forEach(
     ([tokenType, token]) => {
       if (!token) {
-        throw new Error(`Missing ${tokenType}`);
+        const msg = `Missing ${tokenType}`;
+        console.error(msg);
+        throw new Error(msg);
       }
     },
   );

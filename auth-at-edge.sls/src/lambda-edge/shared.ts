@@ -45,24 +45,19 @@ const ssm = new SSM({ region: "us-east-1" });
 export async function getParameterValue(
   parameterName: string,
 ): Promise<string> {
-  console.log("IN GET_PARAMETER_VALUE");
   const r: GetParameterResult = await ssm
     .getParameter({ Name: parameterName })
     .promise();
-  console.log(r);
 
   if (!r.Parameter || !r.Parameter.Value) {
     const msg = `Could not retrieve a value for the ${parameterName} parameter`;
     console.log(msg);
     throw new Error(msg);
   }
-  console.log("END GET_PARAMETER_VALUE");
   return r.Parameter.Value;
 }
 
 export async function getConfig(): Promise<any> {
-  console.log("IN GETCONFIG");
-
   const config = {
     clientId: await getParameterValue("client-id"),
     oauthScopes: [
@@ -94,21 +89,12 @@ export async function getConfig(): Promise<any> {
       nonce: "Path=/; Secure; HttpOnly; Max-Age=1800; SameSite=Lax",
     },
   };
-  console.log("Config");
-  console.log(config);
 
   // Derive the issuer and JWKS uri all JWT's will be signed with from the User Pool's ID and region:
   const userPoolRegion = config.userPoolId.match(/^(\S+?)_\S+$/)![1];
-  console.log("UserPoolRegion");
-  console.log(userPoolRegion);
   const tokenIssuer = `https://cognito-idp.${userPoolRegion}.amazonaws.com/${config.userPoolId}`;
-  console.log("tokenIssuer");
-  console.log(tokenIssuer);
   const tokenJwksUri = `${tokenIssuer}/.well-known/jwks.json`;
-  console.log("tokenJwksUri");
-  console.log(tokenJwksUri);
 
-  console.log("END GETCONFIG");
   return Promise.resolve({
     ...config,
     tokenIssuer,
@@ -120,9 +106,6 @@ export async function getConfig(): Promise<any> {
 type Cookies = { [key: string]: string };
 
 function extractCookiesFromHeaders(headers: CloudFrontHeaders) {
-  console.log("IN EXTRACTCOOKIESFROMHEADERS");
-  console.log("headers.cookie");
-  console.log(headers["cookie"]);
   // Cookies are present in the HTTP header "Cookie" that may be present multiple times.
   // This utility function parses occurrences  of that header and splits out all the cookies and their values
   // A simple object is returned that allows easy access by cookie name: e.g. cookies["nonce"]
@@ -167,10 +150,7 @@ export function extractAndParseCookies(
   headers: CloudFrontHeaders,
   clientId: string,
 ) {
-  console.log("IN EXTRACTANDPARSECOOKIES");
   const cookies = extractCookiesFromHeaders(headers);
-  console.log("Cookies");
-  console.log(cookies);
   if (!cookies) {
     return {};
   }
@@ -330,7 +310,9 @@ export async function httpPostWithRetry(
       }
     }
   }
-  throw new Error(`HTTP POST to ${url} failed`);
+  const msg = `HTTP POST to ${url} failed`;
+  console.error(msg);
+  throw new Error(msg);
 }
 
 export function createErrorHtml(

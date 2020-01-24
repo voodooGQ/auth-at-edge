@@ -21,7 +21,7 @@ Properties:
           QueryString: true
         TargetOriginId: dummy-origin
         ViewerProtocolPolicy: redirect-to-https
-      - PathPattern: /
+      - PathPattern: /signout
         Compress: true
         ForwardedValues:
           QueryString: true
@@ -39,20 +39,6 @@ Properties:
       - - !Ref S3Bucket
         - 's3.amazonaws.com'
       Id: protected-bucket
-      OriginCustomHeaders: [
-        {
-          HeaderName: UserPoolId,
-          HeaderValue: !Ref UserPool
-        },
-        {
-          HeaderName: ClientId,
-          HeaderValue: !Ref UserPoolClient
-        },
-        {
-          HeaderName: CognitoAuthDomain,
-          HeaderValue: !GetAtt UserPoolDomain.DomainName
-        },
-      ]
       S3OriginConfig:
         OriginAccessIdentity: !Join
           - '/'
@@ -63,20 +49,6 @@ Properties:
       Id: dummy-origin
       CustomOriginConfig:
         OriginProtocolPolicy: match-viewer
-      OriginCustomHeaders: [
-        {
-          HeaderName: UserPoolId,
-          HeaderValue: !Ref UserPool
-        },
-        {
-          HeaderName: ClientId,
-          HeaderValue: !Ref UserPoolClient
-        },
-        {
-          HeaderName: CognitoAuthDomain,
-          HeaderValue: !GetAtt UserPoolDomain.DomainName
-        },
-      ]
     CustomErrorResponses:
       - ErrorCode: 403
         ResponseCode: 200

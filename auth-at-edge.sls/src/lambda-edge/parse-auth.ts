@@ -12,10 +12,9 @@ import {
   getCookieHeaders,
   httpPostWithRetry,
   createErrorHtml,
-} from "../shared/shared";
+} from "./shared";
 
 export const handler: CloudFrontRequestHandler = async event => {
-  console.log("PARSE AUTH HANDLER");
   const request = event.Records[0].cf.request;
   const {
     clientId,
@@ -26,27 +25,20 @@ export const handler: CloudFrontRequestHandler = async event => {
     redirectPathSignIn,
   } = await getConfig();
   const domainName = request.headers["host"][0].value;
-  console.log("DomainName");
-  console.log(domainName)
   let redirectedFromUri = `https://${domainName}`;
-  console.log("RedirectedFromUri");
-  console.log(redirectedFromUri);
 
   try {
     const { code, state } = parseQueryString(request.querystring);
-    console.log("Code");
-    console.log(code);
-    console.log("State");
-    console.log(state);
     if (
       !code ||
       !state ||
       typeof code !== "string" ||
       typeof state !== "string"
     ) {
-      throw new Error(
-        'Invalid query string. Your query string should include parameters "state" and "code"',
-      );
+      const msg =
+        'Invalid query string. Your query string should include parameters "state" and "code"';
+      console.error(msg);
+      throw new Error(msg);
     }
     const { nonce: currentNonce, requestedUri } = JSON.parse(state);
     redirectedFromUri += requestedUri || "";
@@ -56,9 +48,10 @@ export const handler: CloudFrontRequestHandler = async event => {
     );
     if (!currentNonce || !originalNonce || currentNonce !== originalNonce) {
       if (!originalNonce) {
-        throw new Error(
-          "Your browser didn't send the nonce cookie along, but it is required for security (prevent CSRF).",
-        );
+        const msg =
+          "Your browser didn't send the nonce cookie along, but it is required for security (prevent CSRF).";
+        console.error(msg);
+        throw new Error(msg);
       }
       throw new Error("Nonce mismatch");
     }

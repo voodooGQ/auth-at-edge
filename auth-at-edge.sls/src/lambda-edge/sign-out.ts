@@ -3,14 +3,9 @@
 
 import { stringify as stringifyQueryString } from "querystring";
 import { CloudFrontRequestHandler } from "aws-lambda";
-import {
-  getConfig,
-  extractAndParseCookies,
-  getCookieHeaders,
-} from "../shared/shared";
+import { getConfig, extractAndParseCookies, getCookieHeaders } from "./shared";
 
 export const handler: CloudFrontRequestHandler = async event => {
-  console.log("SIGNOUT HANDLER");
   const request = event.Records[0].cf.request;
   const {
     clientId,
@@ -21,20 +16,10 @@ export const handler: CloudFrontRequestHandler = async event => {
     redirectPathSignOut,
   } = await getConfig();
   const domainName = request.headers["host"][0].value;
-  console.log("RequestHeaders");
-  console.log(request.headers);
-  console.log("DomainName");
-  console.log(domainName);
   const { idToken, accessToken, refreshToken } = extractAndParseCookies(
     request.headers,
     clientId,
   );
-  console.log("IDToken");
-  console.log(idToken);
-  console.log("AccessToken");
-  console.log(accessToken);
-  console.log("RefreshToken");
-  console.log(refreshToken);
 
   if (!idToken) {
     return {
@@ -54,8 +39,6 @@ export const handler: CloudFrontRequestHandler = async event => {
     logout_uri: `https://${domainName}${redirectPathSignOut}`,
     client_id: clientId,
   };
-  console.log("QueryString");
-  console.log(qs);
 
   return {
     status: "307",

@@ -5,11 +5,7 @@ import { stringify as stringifyQueryString } from "querystring";
 import { createHash, randomBytes } from "crypto";
 import { CloudFrontRequestHandler } from "aws-lambda";
 import { validate } from "./validate-jwt";
-import {
-  getConfig,
-  extractAndParseCookies,
-  decodeToken,
-} from "../shared/shared";
+import { getConfig, extractAndParseCookies, decodeToken } from "./shared";
 
 // Allowed characters per https://tools.ietf.org/html/rfc7636#section-4.1
 const SECRET_ALLOWED_CHARS =
@@ -18,8 +14,6 @@ const PKCE_LENGTH = 43; // Should be between 43 and 128 - per spec
 const NONCE_LENGTH = 16; // how many characters should your nonces be?
 
 export const handler: CloudFrontRequestHandler = async event => {
-  console.log("CHECK-AUTH HANDLER");
-  const config = event.Records[0].cf.config;
   const request = event.Records[0].cf.request;
 
   const {
@@ -34,38 +28,20 @@ export const handler: CloudFrontRequestHandler = async event => {
     cloudFrontHeaders,
   } = await getConfig();
 
-  console.log('request.headers');
-  console.log(request.headers);
-  // @TODO: This should be the distribution, but am getting the auth domain instead now that we've
-  // switched to origin-request type calls.
   const domainName = request.headers["host"][0].value;
-  console.log('DomainName');
-  console.log(domainName);
-
-  // @TODO: This is the distribution domain name that matches what's in cognito
-  // const distributionDomainName = config.distributionDomainName;
-
   const requestedUri = `${request.uri}${
     request.querystring ? "?" + request.querystring : ""
   }`;
-  console.log('RequestedURI');
-  console.log(requestedUri);
   const nonce = generateNonce();
-  console.log('Nonce');
-  console.log(nonce);
   try {
     const { tokenUserName, idToken, refreshToken } = extractAndParseCookies(
       request.headers,
       clientId,
     );
-    console.log('TokenUserName');
-    console.log(tokenUserName);
-    console.log('idToken');
-    console.log(idToken);
-    console.log('refreshToken');
-    console.log(refreshToken);
     if (!tokenUserName || !idToken) {
-      throw new Error("No valid credentials present in cookies");
+      const msg = "No valid credentials present in cookies";
+      console.error(msg);
+      throw new Error(msg);
     }
     // If the token has (nearly) expired and there is a refreshToken: refresh tokens
     const { exp } = decodeToken(idToken);
@@ -100,19 +76,8 @@ export const handler: CloudFrontRequestHandler = async event => {
     return request;
   } catch (err) {
     const { pkce, pkceHash } = generatePkceVerifier();
-    console.log("pkce");
-    console.log(pkce);
-    console.log("pkcehash");
-    console.log(pkceHash);
     const loginQueryString = stringifyQueryString({
-      // @TODO: This used to call to ${domainName} however, now that we're using
-      // origin-request type cf calls the host ends up being different.
-      // This causes cognito to fail as it doesn't match the domain
-      // we added in the domain handler. Attempting a switch to
-      // ${distributionDomainName} to see if we get appropriate
-      // results.
       redirect_uri: `https://${domainName}${redirectPathSignIn}`,
-      // redirect_uri: `https://${distributionDomainName}${redirectPathSignIn}`,
       response_type: "code",
       client_id: clientId,
       state: JSON.stringify({ nonce, requestedUri }),
@@ -120,8 +85,6 @@ export const handler: CloudFrontRequestHandler = async event => {
       code_challenge_method: "S256",
       code_challenge: pkceHash,
     });
-    console.log("LoginQueryString");
-    console.log(loginQueryString);
     return {
       status: "307",
       statusDescription: "Temporary Redirect",
