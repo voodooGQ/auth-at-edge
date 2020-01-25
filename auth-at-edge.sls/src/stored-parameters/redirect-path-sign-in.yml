@@ -1,0 +1,7 @@
+---
+Type: AWS::SSM::Parameter
+Properties:
+  Name: 'redirect-path-sign-in'
+  Description: "The path to send the user to after Cognito sign-in"
+  Value: !Ref RedirectPathSignIn
+  Type: String

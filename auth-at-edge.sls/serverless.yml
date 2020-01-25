@@ -1,4 +1,4 @@
-service: pspa-debug-6
+service: private-spa
 
 plugins:
 - serverless-webpack
@@ -46,21 +46,21 @@ functions:
     lambdaAtEdge:
       distribution: CloudFrontDistribution
       eventType: 'viewer-request'
-      pathPattern: /parseauth
+      pathPattern: !Ref RedirectPathSignIn
   refreshAuth:
     handler: src/lambda-edge/refresh-auth.handler
     role: LambdaEdgeExecutionRole
     lambdaAtEdge:
       distribution: CloudFrontDistribution
       eventType: 'viewer-request'
-      pathPattern: /refreshauth
+      pathPattern: !Ref RedirectPathAuthRefresh
   signOut:
     handler: src/lambda-edge/sign-out.handler
     role: LambdaEdgeExecutionRole
     lambdaAtEdge:
       distribution: CloudFrontDistribution
       eventType: 'viewer-request'
-      pathPattern: /signout
+      pathPattern: !Ref SignOutUrl
   userPoolDomainHandler:
     handler: src/user-pool/domain/index.handler
     role: UserPoolDomainHandlerRole
@@ -125,7 +125,6 @@ resources:
       Type: String
       Description: "Use for development: putting in a new version forces redeployment of Lambda@Edge functions"
       Default: "1.0.0"
-
   Outputs:
     S3Bucket:
       Description: The S3 Bucket where the SPA (React, Angular, Vue, ...) is uploaded to
@@ -165,3 +164,7 @@ resources:
     StoredParameterClientId: ${file(./src/stored-parameters/client-id.yml)}
     StoredParameterCognitoAuthDomain: ${file(./src/stored-parameters/cognito-auth-domain.yml)}
     StoredParameterUserPoolId: ${file(./src/stored-parameters/user-pool-id.yml)}
+    StoredParameterRedirectPathSignIn: ${file(./src/stored-parameters/redirect-path-sign-in.yml)}
+    StoredParameterRedirectPathSignOut: ${file(./src/stored-parameters/redirect-path-sign-out.yml)}
+    StoredParameterRedirectPathAuthRefresh: ${file(./src/stored-parameters/redirect-path-auth-refresh.yml)}
+    StoredParameterSignOutUrl: ${file(./src/stored-parameters/sign-out-url.yml)}

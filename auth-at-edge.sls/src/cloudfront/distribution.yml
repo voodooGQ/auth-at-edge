@@ -9,19 +9,19 @@ Properties:
       # References to the Parameters ends up failing with
       # an object being found instead of a string.
       # @TODO: Work on getting variables in
-      - PathPattern: /parseauth
+      - PathPattern: !Ref RedirectPathSignIn
         Compress: true
         ForwardedValues:
           QueryString: true
         TargetOriginId: dummy-origin
         ViewerProtocolPolicy: redirect-to-https
-      - PathPattern: /refreshauth
+      - PathPattern: !Ref RedirectPathAuthRefresh
         Compress: true
         ForwardedValues:
           QueryString: true
         TargetOriginId: dummy-origin
         ViewerProtocolPolicy: redirect-to-https
-      - PathPattern: /signout
+      - PathPattern: !Ref SignOutUrl
         Compress: true
         ForwardedValues:
           QueryString: true

@@ -1,0 +1,7 @@
+---
+Type: AWS::SSM::Parameter
+Properties:
+  Name: 'sign-out-url'
+  Description: "The URL path that you can visit to sign-out"
+  Value: !Ref SignOutUrl
+  Type: String

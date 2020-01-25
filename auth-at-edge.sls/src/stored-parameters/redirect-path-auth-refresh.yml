@@ -1,0 +1,7 @@
+---
+Type: AWS::SSM::Parameter
+Properties:
+  Name: 'redirect-path-auth-refresh'
+  Description: "The URL path that should handle the JWT refresh request"
+  Value: !Ref RedirectPathAuthRefresh
+  Type: String

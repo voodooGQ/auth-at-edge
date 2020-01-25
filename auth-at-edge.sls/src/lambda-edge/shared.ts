@@ -69,7 +69,7 @@ export async function getConfig(): Promise<any> {
     ],
     cognitoAuthDomain: await getParameterValue("cognito-auth-domain"),
     userPoolId: await getParameterValue("user-pool-id"),
-    redirectPathSignIn: "/parseauth",
+    redirectPathSignIn: await getParameterValue("redirect-path-sign-in"),
     redirectPathAuthRefresh: "/refreshauth",
     redirectPathSignOut: "/signout",
     httpHeaders: {
