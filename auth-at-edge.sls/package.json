@@ -14,7 +14,7 @@
   "license": "ISC",
   "dependencies": {
     "adm-zip": "^0.4.13",
-    "aws-sdk": "^2.556.0",
+    "aws-sdk": "^2.814.0",
     "axios": "^0.19.1",
     "cookie": "^0.4.0",
     "jsonwebtoken": "^8.5.1",
